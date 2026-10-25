@@ -284,7 +284,7 @@ export const LedgerView: React.FC = () => {
                         <th style={{ minWidth: 200 }}>Note</th>
                         <th style={{ minWidth: 110 }}>Intent</th>
                         <th className="text-right" style={{ minWidth: 120 }}>Amount (₹)</th>
-                        <th className="text-center" style={{ minWidth: 80 }}>Actions</th>
+                        <th className="text-right" style={{ minWidth: 80 }}>Actions</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -304,7 +304,7 @@ export const LedgerView: React.FC = () => {
                                 {cat ? cat.name : 'Uncategorized'}
                               </span>
                             </td>
-                            <td className="font-medium">{entry.note || '—'}</td>
+                            <td className="font-medium table-cell-note">{entry.note || '—'}</td>
                             <td>
                               {entry.intent ? (
                                 <span className={`intent-badge intent-${entry.intent}`}>

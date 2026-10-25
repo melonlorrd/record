@@ -732,9 +732,10 @@ button, input, select, textarea {
 .entry-note {
   font-weight: 600;
   font-size: 0.95rem;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  white-space: normal;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  line-height: 1.35;
 }
 
 .entry-subtitle-row {
@@ -788,6 +789,7 @@ button, input, select, textarea {
 }
 
 .desktop-table th {
+  text-align: left;
   font-weight: 600;
   color: var(--text-muted);
   font-size: 0.75rem;
@@ -795,6 +797,30 @@ button, input, select, textarea {
   letter-spacing: 0.04em;
   background-color: var(--bg-input);
   white-space: nowrap;
+}
+
+.desktop-table th.text-right,
+.desktop-table td.text-right {
+  text-align: right;
+}
+
+.desktop-table th.text-center,
+.desktop-table td.text-center {
+  text-align: center;
+}
+
+.desktop-table td {
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+.table-cell-note {
+  max-width: 380px;
+  min-width: 180px;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  white-space: normal;
+  line-height: 1.4;
 }
 
 .desktop-table tbody tr:last-child td {
@@ -1045,9 +1071,15 @@ button, input, select, textarea {
 }
 
 .mini-table th {
+  text-align: left;
   color: var(--text-muted);
   font-size: 0.75rem;
   text-transform: uppercase;
+}
+
+.mini-table th.text-right,
+.mini-table td.text-right {
+  text-align: right;
 }
 
 /* Small Purchases & Micro Purchases */

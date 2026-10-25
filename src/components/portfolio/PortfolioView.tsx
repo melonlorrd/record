@@ -305,7 +305,7 @@ export const PortfolioView: React.FC = () => {
                   <th className="text-right" style={{ minWidth: 95 }}>Invested</th>
                   <th className="text-right" style={{ minWidth: 105 }}>Current Value</th>
                   <th className="text-right" style={{ minWidth: 110 }}>Gain / Loss</th>
-                  <th className="text-center" style={{ minWidth: 50 }}>Actions</th>
+                  <th className="text-right" style={{ minWidth: 50 }}>Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -342,7 +342,7 @@ export const PortfolioView: React.FC = () => {
                           ({isProfit ? '+' : ''}{h.gainPercent}%)
                         </div>
                       </td>
-                      <td className="text-center">
+                      <td className="text-right">
                         <button
                           type="button"
                           className="btn-icon"
