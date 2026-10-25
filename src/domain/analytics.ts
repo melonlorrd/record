@@ -572,3 +572,254 @@ export function calculateNoSpendCalendar(
     longestStreak,
   };
 }
+
+export interface WorkdayRoutineHourProfile {
+  hour: number;           // 0-23
+  hourLabel: string;      // e.g. "4 PM"
+  timeRangeLabel: string; // e.g. "4:00 PM – 5:00 PM"
+  workdayCount: number;
+  workdayTotalCents: number;
+  workdayAvgCents: number;
+  weekendCount: number;
+  weekendTotalCents: number;
+  topCategoryName: string | null;
+  topCategoryColor: string | null;
+  isPeakRoutine: boolean;
+}
+
+export interface WorkdayRoutineCategoryItem {
+  categoryId: string;
+  name: string;
+  color: string;
+  count: number;
+  totalCents: number;
+  percentage: number;
+}
+
+export interface WorkdayRoutineFrequentItem {
+  note: string;
+  count: number;
+  typicalAmountCents: number;
+}
+
+export interface WorkdayRoutineInsight {
+  currentHour: number;
+  isCurrentlyWorkday: boolean;
+  selectedHour: number;
+  selectedHourLabel: string;
+  selectedTimeRangeLabel: string;
+  totalWorkdaysRecorded: number;
+  selectedHourWorkdayCount: number;
+  selectedHourTotalCents: number;
+  selectedHourAvgCents: number;
+  frequencyPercentage: number;
+  topCategories: WorkdayRoutineCategoryItem[];
+  frequentItems: WorkdayRoutineFrequentItem[];
+  routineSummary: string;
+  hourlyProfiles: WorkdayRoutineHourProfile[];
+}
+
+/**
+ * Analyzes workday (Monday-Friday) time-of-day spending patterns and habits.
+ * Helps answer: "It is 4 PM on a weekday at work: what is my routine eating or spending pattern?"
+ */
+export function calculateWorkdayRoutineInsight(
+  activeEntries: readonly Entry[],
+  categories: readonly Category[],
+  selectedHour?: number,
+  tz: string = 'Asia/Kolkata',
+  nowMs: number = Date.now()
+): WorkdayRoutineInsight {
+  const nowParts = getPartsInTz(nowMs, tz);
+  const currentHour = nowParts.hour;
+  const isCurrentlyWorkday = nowParts.weekday >= 1 && nowParts.weekday <= 5;
+  const targetHour = selectedHour !== undefined ? selectedHour : currentHour;
+
+  const categoryMap = new Map<string, Category>();
+  for (const c of categories) {
+    categoryMap.set(c.id, c);
+  }
+
+  // Track distinct workdays in dataset
+  const workdayDatesSet = new Set<string>();
+
+  // 24-hour profiles
+  const hourWorkdayTotals = Array.from({ length: 24 }, () => ({
+    count: 0,
+    totalCents: 0,
+    categoryCounts: new Map<string, { count: number; totalCents: number }>(),
+  }));
+
+  const hourWeekendTotals = Array.from({ length: 24 }, () => ({
+    count: 0,
+    totalCents: 0,
+  }));
+
+  // Selected hour specific data
+  const selectedCatTotals = new Map<string, { count: number; totalCents: number }>();
+  const selectedNoteTotals = new Map<string, { count: number; totalCents: number }>();
+
+  for (const entry of activeEntries) {
+    if (entry.kind !== 'expense') continue;
+    const parts = getPartsInTz(entry.occurredAt, entry.tz || tz);
+    const isWorkday = parts.weekday >= 1 && parts.weekday <= 5;
+    const isoDate = toISODateInTz(entry.occurredAt, entry.tz || tz);
+
+    if (isWorkday) {
+      workdayDatesSet.add(isoDate);
+      const wProfile = hourWorkdayTotals[parts.hour];
+      if (wProfile) {
+        wProfile.count += 1;
+        wProfile.totalCents += entry.amountCents;
+        const catStat = wProfile.categoryCounts.get(entry.categoryId) ?? { count: 0, totalCents: 0 };
+        catStat.count += 1;
+        catStat.totalCents += entry.amountCents;
+        wProfile.categoryCounts.set(entry.categoryId, catStat);
+      }
+
+      if (parts.hour === targetHour) {
+        // Accumulate for selected hour
+        const catStat = selectedCatTotals.get(entry.categoryId) ?? { count: 0, totalCents: 0 };
+        catStat.count += 1;
+        catStat.totalCents += entry.amountCents;
+        selectedCatTotals.set(entry.categoryId, catStat);
+
+        const cleanNote = entry.note.trim() || 'General Expense';
+        const noteStat = selectedNoteTotals.get(cleanNote) ?? { count: 0, totalCents: 0 };
+        noteStat.count += 1;
+        noteStat.totalCents += entry.amountCents;
+        selectedNoteTotals.set(cleanNote, noteStat);
+      }
+    } else {
+      const weProfile = hourWeekendTotals[parts.hour];
+      if (weProfile) {
+        weProfile.count += 1;
+        weProfile.totalCents += entry.amountCents;
+      }
+    }
+  }
+
+  const formatHourLabel = (h: number): string => {
+    const period = h >= 12 ? 'PM' : 'AM';
+    const displayH = h % 12 === 0 ? 12 : h % 12;
+    return `${displayH} ${period}`;
+  };
+
+  const formatRangeLabel = (h: number): string => {
+    const startStr = formatHourLabel(h);
+    const endStr = formatHourLabel((h + 1) % 24);
+    return `${startStr} – ${endStr}`;
+  };
+
+  // Find peak workday routine hours (top 3 hours with most frequency)
+  const sortedWorkdayHours = [...hourWorkdayTotals.map((h, idx) => ({ idx, count: h.count }))]
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 3)
+    .map((x) => x.idx);
+
+  const hourlyProfiles: WorkdayRoutineHourProfile[] = hourWorkdayTotals.map((w, h) => {
+    const we = hourWeekendTotals[h] ?? { count: 0, totalCents: 0 };
+
+    // Find top category for this hour
+    let topCatName: string | null = null;
+    let topCatColor: string | null = null;
+    let maxCatCount = 0;
+
+    for (const [catId, stat] of w.categoryCounts.entries()) {
+      if (stat.count > maxCatCount) {
+        maxCatCount = stat.count;
+        const cat = categoryMap.get(catId);
+        if (cat) {
+          topCatName = cat.name;
+          topCatColor = cat.color;
+        }
+      }
+    }
+
+    return {
+      hour: h,
+      hourLabel: formatHourLabel(h),
+      timeRangeLabel: formatRangeLabel(h),
+      workdayCount: w.count,
+      workdayTotalCents: w.totalCents,
+      workdayAvgCents: w.count > 0 ? Math.round(w.totalCents / w.count) : 0,
+      weekendCount: we.count,
+      weekendTotalCents: we.totalCents,
+      topCategoryName: topCatName,
+      topCategoryColor: topCatColor,
+      isPeakRoutine: sortedWorkdayHours.includes(h) && w.count >= 3,
+    };
+  });
+
+  const selectedTargetProfile = hourWorkdayTotals[targetHour] ?? { count: 0, totalCents: 0 };
+  const totalWorkdays = Math.max(1, workdayDatesSet.size);
+  const frequencyPct = Math.round((selectedTargetProfile.count / totalWorkdays) * 100);
+
+  // Top categories for selected hour
+  const topCategories: WorkdayRoutineCategoryItem[] = [];
+  for (const [catId, stat] of selectedCatTotals.entries()) {
+    const cat = categoryMap.get(catId);
+    const name = cat ? cat.name : 'Uncategorized';
+    const color = cat ? cat.color : '#8b949e';
+    const percentage = selectedTargetProfile.totalCents > 0
+      ? Math.round((stat.totalCents / selectedTargetProfile.totalCents) * 1000) / 10
+      : 0;
+
+    topCategories.push({
+      categoryId: catId,
+      name,
+      color,
+      count: stat.count,
+      totalCents: stat.totalCents,
+      percentage,
+    });
+  }
+  topCategories.sort((a, b) => b.totalCents - a.totalCents);
+
+  // Frequent items for selected hour
+  const frequentItems: WorkdayRoutineFrequentItem[] = [];
+  for (const [note, stat] of selectedNoteTotals.entries()) {
+    frequentItems.push({
+      note,
+      count: stat.count,
+      typicalAmountCents: Math.round(stat.totalCents / stat.count),
+    });
+  }
+  frequentItems.sort((a, b) => b.count - a.count);
+
+  // Generate natural language routine summary
+  const targetLabel = formatHourLabel(targetHour);
+  let routineSummary = '';
+  if (selectedTargetProfile.count > 0) {
+    const topCat = topCategories[0];
+    const topItem = frequentItems[0];
+    const avgRupees = (selectedTargetProfile.totalCents / selectedTargetProfile.count / 100).toFixed(0);
+
+    if (topCat && topCat.percentage > 50) {
+      routineSummary = `At ${targetLabel} on workdays, your primary routine is "${topCat.name}" (${topCat.percentage}% of spending at this hour). You've spent on this ${selectedTargetProfile.count} times averaging ~₹${avgRupees}/occurrence.`;
+    } else if (topItem) {
+      routineSummary = `At ${targetLabel} on workdays, you frequently spend on "${topItem.note}" (recorded ${topItem.count} times, typically ~₹${(topItem.typicalAmountCents / 100).toFixed(0)}).`;
+    } else {
+      routineSummary = `At ${targetLabel} on workdays, you have recorded ${selectedTargetProfile.count} transactions totaling ₹${(selectedTargetProfile.totalCents / 100).toFixed(0)}.`;
+    }
+  } else {
+    routineSummary = `At ${targetLabel} on workdays, you usually have no recorded spending (typically working or not eating/ordering out during this hour).`;
+  }
+
+  return {
+    currentHour,
+    isCurrentlyWorkday,
+    selectedHour: targetHour,
+    selectedHourLabel: targetLabel,
+    selectedTimeRangeLabel: formatRangeLabel(targetHour),
+    totalWorkdaysRecorded: totalWorkdays,
+    selectedHourWorkdayCount: selectedTargetProfile.count,
+    selectedHourTotalCents: selectedTargetProfile.totalCents,
+    selectedHourAvgCents: selectedTargetProfile.count > 0 ? Math.round(selectedTargetProfile.totalCents / selectedTargetProfile.count) : 0,
+    frequencyPercentage: Math.min(100, frequencyPct),
+    topCategories,
+    frequentItems,
+    routineSummary,
+    hourlyProfiles,
+  };
+}

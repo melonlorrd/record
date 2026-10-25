@@ -24,6 +24,7 @@ import { WeekdayHourHeatmap } from './WeekdayHourHeatmap';
 import { HabitShare } from './HabitShare';
 import { SmallPurchases } from './SmallPurchases';
 import { NoSpendCalendar } from './NoSpendCalendar';
+import { WorkdayRoutine } from './WorkdayRoutine';
 
 export const DashboardView: React.FC = () => {
   const { entries, categories } = useStore();
@@ -130,10 +131,13 @@ export const DashboardView: React.FC = () => {
         <SmallPurchases entries={periodEntries} />
       </div>
 
-      {/* 5. Weekday x Hour Heatmap */}
+      {/* 5. Workday Routine & Habit Clock */}
+      <WorkdayRoutine entries={activeEntries} categories={categories} />
+
+      {/* 6. Weekday x Hour Heatmap */}
       <WeekdayHourHeatmap cells={heatmapCells} />
 
-      {/* 6. No-Spend Days Calendar */}
+      {/* 7. No-Spend Days Calendar */}
       <NoSpendCalendar entries={activeEntries} />
     </div>
   );

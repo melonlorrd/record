@@ -28,6 +28,7 @@ export const CategoryDonut: React.FC<CategoryDonutProps> = ({ breakdown }) => {
       legend: {
         show: false,
       },
+      backgroundColor: 'transparent',
       series: [
         {
           name: 'Expenses by Category',

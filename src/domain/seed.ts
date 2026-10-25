@@ -41,7 +41,7 @@ export const SEED_CATEGORIES: Category[] = [
   {
     id: 'c1111111-1111-4111-8111-111111111111',
     name: 'Housing & Rent',
-    color: '#6366f1', // Indigo
+    color: '#0969da', // GitHub Blue
     archived: false,
     updatedAt: 1720000000000,
     deleted: false,
@@ -49,7 +49,7 @@ export const SEED_CATEGORIES: Category[] = [
   {
     id: 'c2222222-2222-4222-8222-222222222222',
     name: 'Groceries & Essentials',
-    color: '#10b981', // Emerald
+    color: '#1a7f37', // GitHub Forest Green
     archived: false,
     updatedAt: 1720000000000,
     deleted: false,
@@ -57,7 +57,7 @@ export const SEED_CATEGORIES: Category[] = [
   {
     id: 'c3333333-3333-4333-8333-333333333333',
     name: 'Work Food & Chai',
-    color: '#f59e0b', // Amber
+    color: '#d29922', // GitHub Amber / Chai
     archived: false,
     updatedAt: 1720000000000,
     deleted: false,
@@ -65,7 +65,7 @@ export const SEED_CATEGORIES: Category[] = [
   {
     id: 'c4444444-4444-4444-8444-444444444444',
     name: 'Dining & Outings',
-    color: '#ec4899', // Pink
+    color: '#bf3989', // GitHub Plum
     archived: false,
     updatedAt: 1720000000000,
     deleted: false,
@@ -73,7 +73,7 @@ export const SEED_CATEGORIES: Category[] = [
   {
     id: 'c5555555-5555-4555-8555-555555555555',
     name: 'Subscriptions & Bills',
-    color: '#3b82f6', // Blue
+    color: '#58a6ff', // GitHub Sky Blue
     archived: false,
     updatedAt: 1720000000000,
     deleted: false,
@@ -81,7 +81,7 @@ export const SEED_CATEGORIES: Category[] = [
   {
     id: 'c6666666-6666-4666-8666-666666666666',
     name: 'Gadgets & Impulse',
-    color: '#8b5cf6', // Violet
+    color: '#8250df', // GitHub Purple
     archived: false,
     updatedAt: 1720000000000,
     deleted: false,
@@ -89,7 +89,7 @@ export const SEED_CATEGORIES: Category[] = [
   {
     id: 'c7777777-7777-4777-8777-777777777777',
     name: 'Income & Salary',
-    color: '#14b8a6', // Teal
+    color: '#2da44e', // GitHub Green
     archived: false,
     updatedAt: 1720000000000,
     deleted: false,

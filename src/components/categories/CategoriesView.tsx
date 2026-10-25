@@ -4,18 +4,18 @@ import { Category } from '../../domain/types';
 import { Modal } from '../common/Modal';
 
 const PALETTE = [
-  '#6366f1', // Indigo
-  '#10b981', // Emerald
-  '#f59e0b', // Amber
-  '#ec4899', // Pink
-  '#3b82f6', // Blue
-  '#8b5cf6', // Violet
-  '#14b8a6', // Teal
-  '#ef4444', // Red
-  '#06b6d4', // Cyan
-  '#84cc16', // Lime
-  '#f97316', // Orange
-  '#64748b', // Slate
+  '#0969da', // GitHub Blue
+  '#1a7f37', // GitHub Forest Green
+  '#d29922', // GitHub Amber / Chai
+  '#bf3989', // GitHub Plum
+  '#58a6ff', // GitHub Sky Blue
+  '#8250df', // GitHub Purple
+  '#2da44e', // GitHub Mint Green
+  '#cf222e', // GitHub Red
+  '#0550ae', // GitHub Deep Navy
+  '#fb8f44', // GitHub Orange
+  '#1b7c83', // GitHub Teal
+  '#6e7781', // GitHub Neutral Slate
 ];
 
 export const CategoriesView: React.FC = () => {

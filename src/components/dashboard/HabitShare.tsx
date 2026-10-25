@@ -56,13 +56,14 @@ export const HabitShare: React.FC<HabitShareProps> = ({ weeks }) => {
           lineStyle: { color: 'rgba(100, 116, 139, 0.15)' },
         },
       },
+      backgroundColor: 'transparent',
       series: [
         {
           name: '🌱 Need',
           type: 'bar',
           stack: 'intent',
           data: needData,
-          itemStyle: { color: '#10b981' },
+          itemStyle: { color: '#2ea043' },
           barMaxWidth: 32,
         },
         {
@@ -70,7 +71,7 @@ export const HabitShare: React.FC<HabitShareProps> = ({ weeks }) => {
           type: 'bar',
           stack: 'intent',
           data: wantData,
-          itemStyle: { color: '#f59e0b' },
+          itemStyle: { color: '#d29922' },
           barMaxWidth: 32,
         },
         {
@@ -78,7 +79,7 @@ export const HabitShare: React.FC<HabitShareProps> = ({ weeks }) => {
           type: 'bar',
           stack: 'intent',
           data: impulseData,
-          itemStyle: { color: '#8b5cf6' },
+          itemStyle: { color: '#a371f7' },
           barMaxWidth: 32,
         },
       ],

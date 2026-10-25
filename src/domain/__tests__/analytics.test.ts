@@ -9,6 +9,7 @@ import {
   calculateHabitShareByWeek,
   calculateSmallPurchases,
   calculateNoSpendCalendar,
+  calculateWorkdayRoutineInsight,
 } from '../analytics';
 import { Entry, Category } from '../types';
 
@@ -220,5 +221,16 @@ describe('Analytics Domain Logic', () => {
     expect(calendar.noSpendDaysCount).toBe(29);
     // Current streak backwards from Oct 31 to Oct 5 is 27 days
     expect(calendar.currentStreak).toBe(27);
+  });
+
+  it('calculates workday routine insight for a specific hour (e.g. 10 AM)', () => {
+    const active = getActiveEntries(sampleEntries);
+    // e2 happened at 10 AM (IST) on a Wednesday (workday)
+    const routine = calculateWorkdayRoutineInsight(active, [catFood, catSalary], 10, 'Asia/Kolkata');
+    expect(routine.selectedHour).toBe(10);
+    expect(routine.selectedHourWorkdayCount).toBe(1);
+    expect(routine.selectedHourTotalCents).toBe(15000);
+    expect(routine.topCategories[0]?.name).toBe('Food');
+    expect(routine.frequentItems[0]?.note).toBe('Morning chai');
   });
 });

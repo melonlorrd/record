@@ -53,6 +53,7 @@ export const WeekdayHourHeatmap: React.FC<WeekdayHourHeatmapProps> = ({ cells })
         splitArea: { show: true },
         axisLabel: { fontSize: 11 },
       },
+      backgroundColor: 'transparent',
       visualMap: {
         min: 0,
         max: maxSpentRupees,
@@ -63,7 +64,7 @@ export const WeekdayHourHeatmap: React.FC<WeekdayHourHeatmapProps> = ({ cells })
         itemWidth: 14,
         itemHeight: 120,
         inRange: {
-          color: ['rgba(30, 41, 59, 0.4)', '#0284c7', '#f59e0b', '#ef4444'],
+          color: ['rgba(48, 54, 61, 0.3)', '#58a6ff', '#d29922', '#f85149'],
         },
         textStyle: { color: 'inherit', fontSize: 10 },
         formatter: (val: number) => `₹${val >= 1000 ? `${(val / 1000).toFixed(0)}k` : Math.round(val)}`,

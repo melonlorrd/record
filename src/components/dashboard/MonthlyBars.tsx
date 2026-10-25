@@ -55,19 +55,20 @@ export const MonthlyBars: React.FC<MonthlyBarsProps> = ({ monthlyData }) => {
           lineStyle: { color: 'rgba(100, 116, 139, 0.15)' },
         },
       },
+      backgroundColor: 'transparent',
       series: [
         {
           name: 'Income',
           type: 'bar',
           data: incomeValues,
-          itemStyle: { color: '#10b981', borderRadius: [4, 4, 0, 0] },
+          itemStyle: { color: '#2ea043', borderRadius: [4, 4, 0, 0] },
           barMaxWidth: 30,
         },
         {
           name: 'Expense',
           type: 'bar',
           data: expenseValues,
-          itemStyle: { color: '#f43f5e', borderRadius: [4, 4, 0, 0] },
+          itemStyle: { color: '#f85149', borderRadius: [4, 4, 0, 0] },
           barMaxWidth: 30,
         },
       ],

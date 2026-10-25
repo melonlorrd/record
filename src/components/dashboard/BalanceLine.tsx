@@ -52,6 +52,7 @@ export const BalanceLine: React.FC<BalanceLineProps> = ({ balancePoints }) => {
           lineStyle: { color: 'rgba(100, 116, 139, 0.15)' },
         },
       },
+      backgroundColor: 'transparent',
       series: [
         {
           name: 'Balance',
@@ -61,7 +62,7 @@ export const BalanceLine: React.FC<BalanceLineProps> = ({ balancePoints }) => {
           data: values,
           lineStyle: {
             width: 3,
-            color: '#3b82f6',
+            color: '#58a6ff',
           },
           areaStyle: {
             color: {
@@ -71,8 +72,8 @@ export const BalanceLine: React.FC<BalanceLineProps> = ({ balancePoints }) => {
               x2: 0,
               y2: 1,
               colorStops: [
-                { offset: 0, color: 'rgba(59, 130, 246, 0.35)' },
-                { offset: 1, color: 'rgba(59, 130, 246, 0.02)' },
+                { offset: 0, color: 'rgba(88, 166, 255, 0.35)' },
+                { offset: 1, color: 'rgba(88, 166, 255, 0.02)' },
               ],
             },
           },
