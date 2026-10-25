@@ -1,0 +1,92 @@
+import { z } from 'zod';
+
+/**
+ * Go vs TypeScript note:
+ * In Go, you define a `type Entry struct { ... }` and write validation methods or struct tags.
+ * In TypeScript, we define a runtime Zod schema first, and infer the static TypeScript type
+ * directly with `z.infer<typeof Schema>`. This guarantees runtime validation and compile-time
+ * types are always 100% in sync without code duplication.
+ */
+
+// EntryKind: Tagged enum ('expense' | 'income')
+export const EntryKindSchema = z.enum(['expense', 'income']);
+export type EntryKind = z.infer<typeof EntryKindSchema>;
+
+// Intent: Behavioral spend categorization.
+// In Go, this would be an enum or typed string with an empty string as unassigned.
+// In TS, this is an optional union: 'need' | 'want' | 'impulse'.
+export const IntentSchema = z.enum(['need', 'want', 'impulse']);
+export type Intent = z.infer<typeof IntentSchema>;
+
+// Entry: A single financial transaction.
+// All monetary values are integer cents (e.g. ₹10.50 -> 1050 cents).
+// NEVER use floating point numbers for currency arithmetic.
+export const EntrySchema = z.object({
+  id: z.string().uuid(),
+  kind: EntryKindSchema,
+  amountCents: z.number().int().positive(), // INR integer cents (positive; kind indicates flow)
+  categoryId: z.string(),
+  occurredAt: z.number().int(), // Epoch ms (like Go's time.Time.UnixMilli())
+  tz: z.string().min(1),        // IANA timezone identifier, e.g. "Asia/Kolkata"
+  intent: IntentSchema.optional(),
+  tags: z.array(z.string()),
+  note: z.string(),
+  createdAt: z.number().int(),  // Epoch ms, immutable creation timestamp
+  updatedAt: z.number().int(),  // Epoch ms, tracks last modification
+  deviceId: z.string().min(1),  // Client identifier for future multi-device sync
+  deleted: z.boolean(),        // Soft-delete flag for safe sync and undo actions
+});
+export type Entry = z.infer<typeof EntrySchema>;
+
+// Category: Classification for transactions.
+export const CategorySchema = z.object({
+  id: z.string().uuid(),
+  name: z.string().min(1),
+  color: z.string().min(1),     // CSS color or hex (e.g. "#10b981")
+  archived: z.boolean(),
+  updatedAt: z.number().int(),
+  deleted: z.boolean(),
+});
+export type Category = z.infer<typeof CategorySchema>;
+
+// AppData: Whole on-device state record persisted to IndexedDB.
+export const AppDataSchema = z.object({
+  version: z.literal(1),
+  entries: z.array(EntrySchema),
+  categories: z.array(CategorySchema),
+  lastModified: z.number().int(),
+});
+export type AppData = z.infer<typeof AppDataSchema>;
+
+// ExportPayload: Schema for JSON backup export / import.
+export const ExportPayloadSchema = z.object({
+  exportedAt: z.number().int(),
+  app: z.literal('kosh'),
+  version: z.literal(1),
+  data: AppDataSchema,
+});
+export type ExportPayload = z.infer<typeof ExportPayloadSchema>;
+
+// Input payload for creating a new entry (UI helper type)
+export interface CreateEntryInput {
+  kind: EntryKind;
+  amountCents: number;
+  categoryId: string;
+  occurredAt: number;
+  tz: string;
+  intent?: Intent;
+  tags?: string[];
+  note?: string;
+}
+
+// Input payload for updating an existing entry
+export interface UpdateEntryInput {
+  kind?: EntryKind;
+  amountCents?: number;
+  categoryId?: string;
+  occurredAt?: number;
+  tz?: string;
+  intent?: Intent | undefined;
+  tags?: string[];
+  note?: string;
+}
