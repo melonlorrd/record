@@ -10,11 +10,11 @@ export default defineConfig({
       registerType: 'prompt', // Update prompt flow (shows user modal/toast to reload)
       includeAssets: ['favicon.svg', 'apple-touch-icon.png'],
       manifest: {
-        name: 'Kosh - Personal Money Tracker',
-        short_name: 'Kosh',
-        description: 'Offline-first, on-device personal money tracker',
-        theme_color: '#0f172a',
-        background_color: '#0f172a',
+        name: 'Record — Personal Money & Portfolio Tracker',
+        short_name: 'Record',
+        description: 'Offline-first, on-device personal money and portfolio tracker',
+        theme_color: '#0d1117',
+        background_color: '#0d1117',
         display: 'standalone',
         orientation: 'portrait-primary',
         start_url: '/',

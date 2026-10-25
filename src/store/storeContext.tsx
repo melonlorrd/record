@@ -13,10 +13,13 @@ import {
   AppData,
   Category,
   CreateEntryInput,
+  CreateHoldingInput,
   Entry,
   ExportPayload,
   ExportPayloadSchema,
+  PortfolioHolding,
   UpdateEntryInput,
+  UpdateHoldingInput,
 } from '../domain/types';
 import {
   clearAppDataFromStorage,
@@ -69,6 +72,7 @@ export interface StoreContextValue {
   entries: Entry[];
   categories: Category[];
   activeCategories: Category[];
+  holdings: PortfolioHolding[];
   theme: 'dark' | 'light';
   toast: ToastState | null;
   toggleTheme: () => void;
@@ -81,6 +85,9 @@ export interface StoreContextValue {
   addCategory: (name: string, color: string) => Promise<string>;
   updateCategory: (id: string, updates: { name?: string; color?: string; archived?: boolean }) => Promise<void>;
   softDeleteCategory: (id: string) => Promise<void>;
+  addHolding: (input: CreateHoldingInput) => Promise<string>;
+  updateHolding: (id: string, input: UpdateHoldingInput) => Promise<void>;
+  softDeleteHolding: (id: string) => Promise<void>;
   resetToSampleData: () => Promise<void>;
   clearAllData: () => Promise<void>;
   importJSON: (jsonString: string) => Promise<{ success: boolean; message: string }>;
@@ -349,6 +356,82 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     await commitData(nextData);
   }, [data, commitData]);
 
+  // Holdings (Mutual Funds, Equity, Gold)
+  const addHolding = useCallback(async (input: CreateHoldingInput): Promise<string> => {
+    const id = generateUUID();
+    const now = Date.now();
+
+    const newHolding: PortfolioHolding = {
+      id,
+      assetClass: input.assetClass,
+      name: input.name.trim(),
+      symbolOrFolio: input.symbolOrFolio?.trim() ?? '',
+      units: input.units,
+      buyAvgPriceCents: input.buyAvgPriceCents,
+      currentNavOrPriceCents: input.currentNavOrPriceCents,
+      notes: input.notes?.trim() ?? '',
+      createdAt: now,
+      updatedAt: now,
+      deleted: false,
+    };
+
+    const nextData: AppData = {
+      ...data,
+      holdings: [...(data.holdings || []), newHolding],
+      lastModified: now,
+    };
+
+    await commitData(nextData);
+    return id;
+  }, [data, commitData]);
+
+  const updateHolding = useCallback(async (
+    id: string,
+    updates: UpdateHoldingInput
+  ): Promise<void> => {
+    const now = Date.now();
+    const nextHoldings = (data.holdings || []).map((h) => {
+      if (h.id !== id) return h;
+      return {
+        ...h,
+        assetClass: updates.assetClass ?? h.assetClass,
+        name: updates.name !== undefined ? updates.name.trim() : h.name,
+        symbolOrFolio: updates.symbolOrFolio !== undefined ? updates.symbolOrFolio.trim() : h.symbolOrFolio,
+        units: updates.units ?? h.units,
+        buyAvgPriceCents: updates.buyAvgPriceCents ?? h.buyAvgPriceCents,
+        currentNavOrPriceCents: updates.currentNavOrPriceCents ?? h.currentNavOrPriceCents,
+        notes: updates.notes !== undefined ? updates.notes.trim() : h.notes,
+        updatedAt: now,
+      };
+    });
+
+    const nextData: AppData = {
+      ...data,
+      holdings: nextHoldings,
+      lastModified: now,
+    };
+
+    await commitData(nextData);
+  }, [data, commitData]);
+
+  const softDeleteHolding = useCallback(async (id: string): Promise<void> => {
+    const now = Date.now();
+    const nextHoldings = (data.holdings || []).map((h) => {
+      if (h.id === id) {
+        return { ...h, deleted: true, updatedAt: now };
+      }
+      return h;
+    });
+
+    const nextData: AppData = {
+      ...data,
+      holdings: nextHoldings,
+      lastModified: now,
+    };
+
+    await commitData(nextData);
+  }, [data, commitData]);
+
   // Reset to Sample Data
   const resetToSampleData = useCallback(async (): Promise<void> => {
     const seed = generateSampleData(Date.now(), getDefaultTimezone(), 42);
@@ -361,14 +444,14 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     await clearAppDataFromStorage();
     const empty = createInitialEmptyData();
     await commitData(empty);
-    showToast({ message: 'All transactions and categories cleared.' });
+    showToast({ message: 'All transactions, portfolio holdings, and categories cleared.' });
   }, [commitData, showToast]);
 
   // Export JSON
   const exportJSON = useCallback((): string => {
     const payload: ExportPayload = {
       exportedAt: Date.now(),
-      app: 'kosh',
+      app: 'record',
       version: 1,
       data,
     };
@@ -417,6 +500,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     entries: data.entries,
     categories: data.categories,
     activeCategories,
+    holdings: data.holdings || [],
     theme,
     toast,
     toggleTheme,
@@ -429,6 +513,9 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     addCategory,
     updateCategory,
     softDeleteCategory,
+    addHolding,
+    updateHolding,
+    softDeleteHolding,
     resetToSampleData,
     clearAllData,
     importJSON,

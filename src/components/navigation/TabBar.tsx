@@ -1,6 +1,6 @@
 import React from 'react';
 
-export type TabKey = 'ledger' | 'dashboard' | 'categories' | 'settings';
+export type TabKey = 'ledger' | 'portfolio' | 'dashboard' | 'categories' | 'settings';
 
 export interface TabBarProps {
   currentTab: TabKey;
@@ -10,6 +10,7 @@ export interface TabBarProps {
 export const TabBar: React.FC<TabBarProps> = ({ currentTab, onSelectTab }) => {
   const tabs: { key: TabKey; label: string; icon: string }[] = [
     { key: 'ledger', label: 'Ledger', icon: '📝' },
+    { key: 'portfolio', label: 'Portfolio', icon: '📈' },
     { key: 'dashboard', label: 'Dashboard', icon: '📊' },
     { key: 'categories', label: 'Categories', icon: '🏷️' },
     { key: 'settings', label: 'Settings', icon: '⚙️' },

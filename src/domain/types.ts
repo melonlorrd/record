@@ -49,11 +49,32 @@ export const CategorySchema = z.object({
 });
 export type Category = z.infer<typeof CategorySchema>;
 
+// AssetClass: Categorization for portfolio investments
+export const AssetClassSchema = z.enum(['mutual_fund', 'equity', 'gold']);
+export type AssetClass = z.infer<typeof AssetClassSchema>;
+
+// PortfolioHolding: Mutual Fund, Equity, or Gold position
+export const PortfolioHoldingSchema = z.object({
+  id: z.string().uuid(),
+  assetClass: AssetClassSchema,
+  name: z.string().min(1),             // e.g. "Parag Parikh Flexi Cap Fund", "HDFC Bank", "Sovereign Gold Bond"
+  symbolOrFolio: z.string(),          // e.g. "PPFCF-G", "HDFCBANK", "SGB2030"
+  units: z.number().positive(),       // Decimal units (e.g. 245.521 units, 15 shares, 10.5 grams)
+  buyAvgPriceCents: z.number().int().positive(),   // Purchase price per unit in integer cents
+  currentNavOrPriceCents: z.number().int().positive(), // Current market price/NAV in integer cents
+  notes: z.string(),
+  createdAt: z.number().int(),
+  updatedAt: z.number().int(),
+  deleted: z.boolean(),
+});
+export type PortfolioHolding = z.infer<typeof PortfolioHoldingSchema>;
+
 // AppData: Whole on-device state record persisted to IndexedDB.
 export const AppDataSchema = z.object({
   version: z.literal(1),
   entries: z.array(EntrySchema),
   categories: z.array(CategorySchema),
+  holdings: z.array(PortfolioHoldingSchema).default([]),
   lastModified: z.number().int(),
 });
 export type AppData = z.infer<typeof AppDataSchema>;
@@ -61,11 +82,31 @@ export type AppData = z.infer<typeof AppDataSchema>;
 // ExportPayload: Schema for JSON backup export / import.
 export const ExportPayloadSchema = z.object({
   exportedAt: z.number().int(),
-  app: z.literal('kosh'),
+  app: z.enum(['record', 'kosh']),
   version: z.literal(1),
   data: AppDataSchema,
 });
 export type ExportPayload = z.infer<typeof ExportPayloadSchema>;
+
+export interface CreateHoldingInput {
+  assetClass: AssetClass;
+  name: string;
+  symbolOrFolio?: string;
+  units: number;
+  buyAvgPriceCents: number;
+  currentNavOrPriceCents: number;
+  notes?: string;
+}
+
+export interface UpdateHoldingInput {
+  assetClass?: AssetClass;
+  name?: string;
+  symbolOrFolio?: string;
+  units?: number;
+  buyAvgPriceCents?: number;
+  currentNavOrPriceCents?: number;
+  notes?: string;
+}
 
 // Input payload for creating a new entry (UI helper type)
 export interface CreateEntryInput {

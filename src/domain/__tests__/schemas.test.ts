@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { EntrySchema, CategorySchema, AppDataSchema, ExportPayloadSchema } from '../types';
+import { EntrySchema, CategorySchema, AppDataSchema, ExportPayloadSchema, PortfolioHoldingSchema } from '../types';
 
 describe('Zod Schemas', () => {
   it('validates a correct entry successfully', () => {
@@ -55,7 +55,24 @@ describe('Zod Schemas', () => {
     expect(parsed.success).toBe(false);
   });
 
-  it('validates full app data payload safely', () => {
+  it('validates portfolio holding correctly', () => {
+    const holding = {
+      id: 'd0000000-0000-4000-8000-000000000001',
+      name: 'Parag Parikh Flexi Cap Fund',
+      symbolOrFolio: 'PPFAS',
+      assetClass: 'mutual_fund' as const,
+      units: 250.5,
+      buyAvgPriceCents: 6850,
+      currentNavOrPriceCents: 8120,
+      notes: 'Monthly SIP',
+      createdAt: 1729864200000,
+      updatedAt: 1729864200000,
+      deleted: false,
+    };
+    expect(PortfolioHoldingSchema.safeParse(holding).success).toBe(true);
+  });
+
+  it('validates full app data payload safely with holdings', () => {
     const appData = {
       version: 1 as const,
       entries: [],
@@ -69,14 +86,29 @@ describe('Zod Schemas', () => {
           deleted: false,
         },
       ],
+      holdings: [],
       lastModified: 1729864200000,
     };
 
     expect(AppDataSchema.safeParse(appData).success).toBe(true);
   });
 
-  it('validates export backup payload', () => {
-    const payload = {
+  it('validates export backup payload for both record and legacy kosh', () => {
+    const recordPayload = {
+      exportedAt: 1729864200000,
+      app: 'record' as const,
+      version: 1 as const,
+      data: {
+        version: 1 as const,
+        entries: [],
+        categories: [],
+        holdings: [],
+        lastModified: 1729864200000,
+      },
+    };
+    expect(ExportPayloadSchema.safeParse(recordPayload).success).toBe(true);
+
+    const legacyPayload = {
       exportedAt: 1729864200000,
       app: 'kosh' as const,
       version: 1 as const,
@@ -87,7 +119,6 @@ describe('Zod Schemas', () => {
         lastModified: 1729864200000,
       },
     };
-
-    expect(ExportPayloadSchema.safeParse(payload).success).toBe(true);
+    expect(ExportPayloadSchema.safeParse(legacyPayload).success).toBe(true);
   });
 });

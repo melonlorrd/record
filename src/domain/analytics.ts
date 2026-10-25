@@ -7,7 +7,7 @@
  * We explicitly guard with `if (item !== undefined)` or provide sensible defaults.
  */
 
-import { Entry, Category } from './types';
+import { Entry, Category, PortfolioHolding, AssetClass } from './types';
 import { DateRange, getPartsInTz, toISODateInTz, toISOMonthInTz } from './dates';
 
 /**
@@ -821,5 +821,123 @@ export function calculateWorkdayRoutineInsight(
     frequentItems,
     routineSummary,
     hourlyProfiles,
+  };
+}
+
+export interface HoldingCalculated extends PortfolioHolding {
+  investedCents: number;
+  currentValueCents: number;
+  gainCents: number;
+  gainPercent: number;
+}
+
+export interface AssetAllocationItem {
+  assetClass: AssetClass;
+  label: string;
+  color: string;
+  totalInvestedCents: number;
+  totalCurrentValueCents: number;
+  percentage: number;
+  holdingsCount: number;
+}
+
+export interface PortfolioSummary {
+  totalInvestedCents: number;
+  totalCurrentValueCents: number;
+  totalGainCents: number;
+  totalGainPercent: number;
+  holdings: HoldingCalculated[];
+  allocation: AssetAllocationItem[];
+  activeHoldingsCount: number;
+}
+
+export function getActiveHoldings(holdings: readonly PortfolioHolding[]): PortfolioHolding[] {
+  return holdings.filter((h) => !h.deleted);
+}
+
+/**
+ * Calculates portfolio performance, unrealized gains, and asset allocation across
+ * Mutual Funds, Equity, and Gold.
+ */
+export function calculatePortfolioSummary(
+  holdings: readonly PortfolioHolding[]
+): PortfolioSummary {
+  const active = getActiveHoldings(holdings);
+
+  let totalInvestedCents = 0;
+  let totalCurrentValueCents = 0;
+
+  const classMap = new Map<AssetClass, { invested: number; current: number; count: number }>();
+  classMap.set('mutual_fund', { invested: 0, current: 0, count: 0 });
+  classMap.set('equity', { invested: 0, current: 0, count: 0 });
+  classMap.set('gold', { invested: 0, current: 0, count: 0 });
+
+  const calculatedHoldings: HoldingCalculated[] = [];
+
+  for (const h of active) {
+    const invested = Math.round(h.units * h.buyAvgPriceCents);
+    const current = Math.round(h.units * h.currentNavOrPriceCents);
+    const gain = current - invested;
+    const gainPct = invested > 0 ? Math.round((gain / invested) * 1000) / 10 : 0;
+
+    totalInvestedCents += invested;
+    totalCurrentValueCents += current;
+
+    const classStat = classMap.get(h.assetClass) ?? { invested: 0, current: 0, count: 0 };
+    classStat.invested += invested;
+    classStat.current += current;
+    classStat.count += 1;
+    classMap.set(h.assetClass, classStat);
+
+    calculatedHoldings.push({
+      ...h,
+      investedCents: invested,
+      currentValueCents: current,
+      gainCents: gain,
+      gainPercent: gainPct,
+    });
+  }
+
+  // Sort descending by current value
+  calculatedHoldings.sort((a, b) => b.currentValueCents - a.currentValueCents);
+
+  const totalGainCents = totalCurrentValueCents - totalInvestedCents;
+  const totalGainPercent = totalInvestedCents > 0
+    ? Math.round((totalGainCents / totalInvestedCents) * 1000) / 10
+    : 0;
+
+  const assetClassMeta: Record<AssetClass, { label: string; color: string }> = {
+    mutual_fund: { label: 'Mutual Funds', color: '#0969da' }, // GitHub Blue
+    equity: { label: 'Equity / Stocks', color: '#1a7f37' },    // GitHub Green
+    gold: { label: 'Gold (Physical & SGB)', color: '#d29922' }, // GitHub Gold
+  };
+
+  const allocation: AssetAllocationItem[] = (['mutual_fund', 'equity', 'gold'] as AssetClass[]).map(
+    (cls) => {
+      const stat = classMap.get(cls) ?? { invested: 0, current: 0, count: 0 };
+      const pct = totalCurrentValueCents > 0
+        ? Math.round((stat.current / totalCurrentValueCents) * 1000) / 10
+        : 0;
+
+      return {
+        assetClass: cls,
+        label: assetClassMeta[cls].label,
+        color: assetClassMeta[cls].color,
+        totalInvestedCents: stat.invested,
+        totalCurrentValueCents: stat.current,
+        percentage: pct,
+        holdingsCount: stat.count,
+      };
+    }
+  );
+
+  return {
+    totalInvestedCents,
+    totalCurrentValueCents,
+    totalGainCents,
+    totalGainPercent,
+    holdings: calculatedHoldings,
+    allocation,
+    activeHoldingsCount: active.length,
   };
 }

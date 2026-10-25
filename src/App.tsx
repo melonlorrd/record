@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { StoreProvider, useStore } from './store/storeContext';
 import { TabBar, TabKey } from './components/navigation/TabBar';
 import { LedgerView } from './components/ledger/LedgerView';
+import { PortfolioView } from './components/portfolio/PortfolioView';
 import { DashboardView } from './components/dashboard/DashboardView';
 import { CategoriesView } from './components/categories/CategoriesView';
 import { SettingsView } from './components/settings/SettingsView';
@@ -17,7 +18,7 @@ const MainApp: React.FC = () => {
     return (
       <div className="loading-screen">
         <div className="spinner" />
-        <h2>Loading Kosh...</h2>
+        <h2>Loading Record...</h2>
         <p className="text-muted">Opening on-device vault</p>
       </div>
     );
@@ -29,9 +30,9 @@ const MainApp: React.FC = () => {
       <header className="top-navbar">
         <div className="top-navbar-content">
           <div className="brand-group">
-            <span className="brand-logo">₹</span>
+            <span className="brand-logo">R</span>
             <div>
-              <h1 className="brand-title">Kosh</h1>
+              <h1 className="brand-title">Record</h1>
               <span className="brand-badge">Offline PWA</span>
             </div>
           </div>
@@ -45,6 +46,13 @@ const MainApp: React.FC = () => {
                 onClick={() => setActiveTab('ledger')}
               >
                 📝 Ledger
+              </button>
+              <button
+                type="button"
+                className={`desktop-nav-btn ${activeTab === 'portfolio' ? 'active' : ''}`}
+                onClick={() => setActiveTab('portfolio')}
+              >
+                📈 Portfolio
               </button>
               <button
                 type="button"
@@ -85,6 +93,7 @@ const MainApp: React.FC = () => {
       {/* Main View Area */}
       <main className="main-content">
         {activeTab === 'ledger' && <LedgerView />}
+        {activeTab === 'portfolio' && <PortfolioView />}
         {activeTab === 'dashboard' && <DashboardView />}
         {activeTab === 'categories' && <CategoriesView />}
         {activeTab === 'settings' && <SettingsView />}

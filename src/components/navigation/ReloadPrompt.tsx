@@ -27,7 +27,7 @@ export const ReloadPrompt: React.FC = () => {
     <div className="reload-prompt-banner" role="alert">
       <div className="reload-prompt-content">
         <span className="reload-prompt-text">
-          🚀 A new version of Kosh is available!
+          🚀 A new version of Record is available!
         </span>
         <div className="reload-prompt-actions">
           <button

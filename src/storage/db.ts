@@ -12,7 +12,8 @@ import { get, set, del } from 'idb-keyval';
 import { AppData, AppDataSchema } from '../domain/types';
 import { SEED_CATEGORIES } from '../domain/seed';
 
-const STORAGE_KEY = 'kosh_money_tracker_data_v1';
+const STORAGE_KEY = 'record_tracker_data_v1';
+const LEGACY_STORAGE_KEY = 'kosh_money_tracker_data_v1';
 
 export interface LoadResult {
   data: AppData;
@@ -25,6 +26,7 @@ export function createInitialEmptyData(): AppData {
     version: 1,
     entries: [],
     categories: [...SEED_CATEGORIES],
+    holdings: [],
     lastModified: Date.now(),
   };
 }
@@ -35,7 +37,15 @@ export function createInitialEmptyData(): AppData {
  */
 export async function loadAppDataFromStorage(): Promise<LoadResult> {
   try {
-    const raw: unknown = await get(STORAGE_KEY);
+    let raw: unknown = await get(STORAGE_KEY);
+
+    // If new key not found, check legacy key
+    if (raw === undefined || raw === null) {
+      const legacyRaw: unknown = await get(LEGACY_STORAGE_KEY);
+      if (legacyRaw !== undefined && legacyRaw !== null) {
+        raw = legacyRaw;
+      }
+    }
 
     if (raw === undefined || raw === null) {
       // Fresh install: initialize with default categories

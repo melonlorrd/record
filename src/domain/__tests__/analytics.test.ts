@@ -10,8 +10,9 @@ import {
   calculateSmallPurchases,
   calculateNoSpendCalendar,
   calculateWorkdayRoutineInsight,
+  calculatePortfolioSummary,
 } from '../analytics';
-import { Entry, Category } from '../types';
+import { Entry, Category, PortfolioHolding } from '../types';
 
 describe('Analytics Domain Logic', () => {
   const catFood: Category = {
@@ -232,5 +233,45 @@ describe('Analytics Domain Logic', () => {
     expect(routine.selectedHourTotalCents).toBe(15000);
     expect(routine.topCategories[0]?.name).toBe('Food');
     expect(routine.frequentItems[0]?.note).toBe('Morning chai');
+  });
+
+  it('calculates portfolio valuation, gains, and asset allocation', () => {
+    const testHoldings: PortfolioHolding[] = [
+      {
+        id: 'h1',
+        assetClass: 'mutual_fund',
+        name: 'Nifty Index Fund',
+        symbolOrFolio: 'N50',
+        units: 100,
+        buyAvgPriceCents: 10000,       // ₹100 buy = ₹10,000 invested (1000000 cents)
+        currentNavOrPriceCents: 15000, // ₹150 current = ₹15,000 current (1500000 cents)
+        notes: '',
+        createdAt: 1720000000000,
+        updatedAt: 1720000000000,
+        deleted: false,
+      },
+      {
+        id: 'h2',
+        assetClass: 'gold',
+        name: 'Sovereign Gold',
+        symbolOrFolio: 'SGB',
+        units: 5,
+        buyAvgPriceCents: 500000,      // ₹5,000 buy = ₹25,000 invested (2500000 cents)
+        currentNavOrPriceCents: 700000,// ₹7,000 current = ₹35,000 current (3500000 cents)
+        notes: '',
+        createdAt: 1720000000000,
+        updatedAt: 1720000000000,
+        deleted: false,
+      },
+    ];
+
+    const summary = calculatePortfolioSummary(testHoldings);
+    expect(summary.totalInvestedCents).toBe(1000000 + 2500000); // 3500000 cents (₹35,000)
+    expect(summary.totalCurrentValueCents).toBe(1500000 + 3500000); // 5000000 cents (₹50,000)
+    expect(summary.totalGainCents).toBe(1500000); // ₹15,000 gain
+    expect(summary.totalGainPercent).toBe(42.9); // (15000 / 35000) * 100 = 42.857 -> 42.9%
+    expect(summary.allocation.length).toBe(3);
+    const goldAlloc = summary.allocation.find((a) => a.assetClass === 'gold');
+    expect(goldAlloc?.percentage).toBe(70); // 35000 / 50000 = 70%
   });
 });

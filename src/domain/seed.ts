@@ -6,7 +6,7 @@
  * Generating sample data is completely reproducible across runs and test environments.
  */
 
-import { AppData, Category, Entry } from './types';
+import { AppData, Category, Entry, PortfolioHolding } from './types';
 import { getDefaultTimezone } from './dates';
 
 class SeededRNG {
@@ -91,6 +91,87 @@ export const SEED_CATEGORIES: Category[] = [
     name: 'Income & Salary',
     color: '#2da44e', // GitHub Green
     archived: false,
+    updatedAt: 1720000000000,
+    deleted: false,
+  },
+];
+
+export const SEED_HOLDINGS: PortfolioHolding[] = [
+  {
+    id: 'd1111111-1111-4111-8111-111111111111',
+    assetClass: 'mutual_fund',
+    name: 'Parag Parikh Flexi Cap Fund (Direct-Growth)',
+    symbolOrFolio: 'PPFCF-DIR-G',
+    units: 185.342,
+    buyAvgPriceCents: 5420,       // ₹54.20 per unit
+    currentNavOrPriceCents: 7685, // ₹76.85 per unit (+41.8%)
+    notes: 'Long-term equity SIP holding with global diversification',
+    createdAt: 1720000000000,
+    updatedAt: 1720000000000,
+    deleted: false,
+  },
+  {
+    id: 'd2222222-2222-4222-8222-222222222222',
+    assetClass: 'mutual_fund',
+    name: 'UTI Nifty 50 Index Fund (Direct-Growth)',
+    symbolOrFolio: 'UTI-N50-DIR',
+    units: 310.125,
+    buyAvgPriceCents: 11250,      // ₹112.50 per unit
+    currentNavOrPriceCents: 15840,// ₹158.40 per unit (+40.8%)
+    notes: 'Core passive market index foundation',
+    createdAt: 1720000000000,
+    updatedAt: 1720000000000,
+    deleted: false,
+  },
+  {
+    id: 'd3333333-3333-4333-8333-333333333333',
+    assetClass: 'equity',
+    name: 'HDFC Bank Ltd',
+    symbolOrFolio: 'HDFCBANK.NS',
+    units: 45,
+    buyAvgPriceCents: 148000,     // ₹1,480.00
+    currentNavOrPriceCents: 168550,// ₹1,685.50 (+13.9%)
+    notes: 'Private banking anchor',
+    createdAt: 1720000000000,
+    updatedAt: 1720000000000,
+    deleted: false,
+  },
+  {
+    id: 'd4444444-4444-4444-8444-444444444444',
+    assetClass: 'equity',
+    name: 'Infosys Ltd',
+    symbolOrFolio: 'INFY.NS',
+    units: 30,
+    buyAvgPriceCents: 136000,     // ₹1,360.00
+    currentNavOrPriceCents: 182000,// ₹1,820.00 (+33.8%)
+    notes: 'IT services compounding bet',
+    createdAt: 1720000000000,
+    updatedAt: 1720000000000,
+    deleted: false,
+  },
+  {
+    id: 'd5555555-5555-4555-8555-555555555555',
+    assetClass: 'gold',
+    name: 'Sovereign Gold Bond 2030 (Series IV)',
+    symbolOrFolio: 'SGB2030IV',
+    units: 8,                      // 8 grams
+    buyAvgPriceCents: 540000,     // ₹5,400.00 / gram
+    currentNavOrPriceCents: 785000,// ₹7,850.00 / gram (+45.4%)
+    notes: 'Tax-free sovereign gold with 2.5% p.a. semi-annual coupon',
+    createdAt: 1720000000000,
+    updatedAt: 1720000000000,
+    deleted: false,
+  },
+  {
+    id: 'd6666666-6666-4666-8666-666666666666',
+    assetClass: 'gold',
+    name: '24K Digital Gold / Vaulted Bullion',
+    symbolOrFolio: 'GOLD-24K',
+    units: 5,                      // 5 grams
+    buyAvgPriceCents: 620000,     // ₹6,200.00 / gram
+    currentNavOrPriceCents: 785000,// ₹7,850.00 / gram (+26.6%)
+    notes: 'Liquid bullion hedge',
+    createdAt: 1720000000000,
     updatedAt: 1720000000000,
     deleted: false,
   },
@@ -361,6 +442,7 @@ export function generateSampleData(
     version: 1,
     entries,
     categories: [...SEED_CATEGORIES],
+    holdings: [...SEED_HOLDINGS],
     lastModified: nowMs,
   };
 }

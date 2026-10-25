@@ -28,7 +28,7 @@ export const SettingsView: React.FC = () => {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `kosh-backup-${new Date().toISOString().slice(0, 10)}.json`;
+    a.download = `record-backup-${new Date().toISOString().slice(0, 10)}.json`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -171,7 +171,7 @@ export const SettingsView: React.FC = () => {
         <div className="sync-badge">PLANNED EXTENSION</div>
         <h3 className="section-subtitle">Multi-Device Cloud Sync</h3>
         <p className="text-muted small-text">
-          Kosh is currently 100% offline and on-device. All records include client device IDs, UTC timestamps, and soft-delete flags, ready for zero-conflict CRDT sync with private self-hosted or cloud backends.
+          Record is currently 100% offline and on-device. All records include client device IDs, UTC timestamps, and soft-delete flags, ready for zero-conflict CRDT sync with private self-hosted or cloud backends.
         </p>
         <div className="sync-status-box">
           <span>Engine Status: <b>Ready (No-op)</b></span>

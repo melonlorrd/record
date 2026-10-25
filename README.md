@@ -1,6 +1,8 @@
-# Kosh (कोश) — Offline-First Personal Money Tracker
+# Record — Offline-First Personal Money & Portfolio Tracker
 
-Kosh is an offline-first, private personal money tracker built as an installable Progressive Web App (PWA). It runs 100% on-device in the browser using IndexedDB, requires zero backend services, and is deployed as a static site to Cloudflare Pages.
+Record is an offline-first, private personal finance and investment portfolio tracker built as an installable Progressive Web App (PWA). It runs 100% on-device in the browser using IndexedDB, requires zero backend services, and is deployed as a static site to Cloudflare Pages.
+
+Styled with **GitHub Primer** design tokens (dark `#0d1117` & light `#f6f8fa`), Record tracks liquid cashflows alongside your complete investment portfolio (Mutual Funds, Equities, and Gold/SGB) with real-time net worth calculation.
 
 ---
 
@@ -10,15 +12,47 @@ If you come from **Go**, TypeScript web development has a few notable difference
 
 Here is a quick cheat sheet of how TypeScript concepts in this codebase map to Go:
 
-| Go Concept | TypeScript / Kosh Implementation | Why / Pitfall Handled |
+| Go Concept | TypeScript / Record Implementation | Why / Pitfall Handled |
 | :--- | :--- | :--- |
-| `type Entry struct { ... }` with struct tags / validation | Zod Schema (`EntrySchema`) + `z.infer<typeof EntrySchema>` | In TS, compile-time types vanish at runtime. Zod validates data at the boundary (IndexedDB, JSON import) and automatically generates matching TS types. |
+| `type Entry struct { ... }` with struct tags / validation | Zod Schema (`EntrySchema`, `PortfolioHoldingSchema`) + `z.infer<...>` | In TS, compile-time types vanish at runtime. Zod validates data at the boundary (IndexedDB, JSON import) and automatically generates matching TS types. |
 | `val, ok := map[key]` comma-ok check | `noUncheckedIndexedAccess: true` | In standard JS, indexing an array `arr[i]` or object `obj[k]` returns `undefined` silently if missing. With this flag enabled, TS forces explicit `if (item !== undefined)` handling just like Go. |
-| IEEE 754 float precision (currency) | `amountCents: number` (Integer paise) | Never store currency as floats (`0.1 + 0.2 = 0.30000000000000004`). In Kosh, ₹100.50 is strictly `10050` integer cents. Currency parsing separates integer rupees from paise. |
+| IEEE 754 float precision (currency) | `amountCents: number` (Integer paise) | Never store currency as floats (`0.1 + 0.2 = 0.30000000000000004`). In Record, ₹100.50 is strictly `10050` integer cents. Currency parsing separates integer rupees from paise. |
 | Pointer / nil vs Zero-value struct | `exactOptionalPropertyTypes: true` | In TS, `{ field?: string }` can be omitted, but cannot be assigned arbitrary nulls unless explicitly declared as `string \| undefined`. |
-| `time.Time.In(loc).Hour()` | Native `Intl.DateTimeFormat` with `{ timeZone: entry.tz }` | Standard JS `Date` is milliseconds since epoch. To calculate hour/weekday heatmaps across multiple timezones, Kosh uses native `Intl` parts extraction without external date libraries. |
+| `time.Time.In(loc).Hour()` | Native `Intl.DateTimeFormat` with `{ timeZone: entry.tz }` | Standard JS `Date` is milliseconds since epoch. To calculate hour/weekday heatmaps across multiple timezones, Record uses native `Intl` parts extraction without external date libraries. |
 | Value copying `e2 := e1` | Spread copies `{ ...entry, updatedAt: now }` | JS objects are references. Domain helpers always return new immutable objects using spread syntax. |
 | Go interfaces / tagged unions | Discriminated unions (`kind: 'expense' \| 'income'`) | Type-narrowing works like Go type switches: checking `if (entry.kind === 'expense')` narrows available properties. |
+
+---
+
+## Features
+
+1. **📝 Ledger**:
+   - Fast `<5s` Quick-Add modal with amount first, category chips, need/want/impulse toggle, and timestamp.
+   - Grouped by day with month/category/search filtering.
+   - Soft-delete with undo toast notifications.
+
+2. **📈 Investment Portfolio**:
+   - Track **Mutual Funds** (units + NAV), **Equities / Stocks** (shares + market price), and **Gold** (Physical grams & Sovereign Gold Bonds / SGB).
+   - Real-time valuation, invested principal, absolute gain, and percentage returns.
+   - Asset class allocation visualizer (Funds vs. Equities vs. Gold).
+   - Unified **Total Net Worth** tile (Liquid Cash from Ledger + Portfolio Valuation).
+
+3. **📊 Analytics & Habit Dashboard**:
+   - **Workday Routine & Habit Clock**: Interactive 24-hour routine analyzer for Mon–Fri office hours (e.g. inspecting 4 PM breaks to see chai, snacks, and lunch trends on workdays).
+   - Headline metrics: Spent, Income, vs. Previous Period, Daily Average.
+   - Monthly Income vs. Expense bar charts.
+   - Category donut chart & top spending table.
+   - Running balance trajectory.
+   - Weekday × Hour spend density heatmap.
+   - Impulse / Want share trends by week.
+   - Micro-purchases tracker (< ₹250 threshold).
+   - No-spend calendar and streaks.
+
+4. **⚙️ Settings & Privacy**:
+   - Validated JSON export/backup and import (supporting Record and backward-compatible Kosh format).
+   - Deterministic 4-month realistic sample data generator.
+   - Storage persistence check (`navigator.storage.persist()`).
+   - Sync placeholder ready for multi-device sync integration.
 
 ---
 
@@ -74,7 +108,7 @@ PWAs require **HTTPS** and a valid Web App Manifest with icons to trigger the na
    - Navigate to the `trycloudflare.com` URL.
    - Tap the **Share** button (box with upward arrow at the bottom).
    - Scroll down and tap **Add to Home Screen**.
-   - Tap **Add**. Kosh will now launch full-screen with offline capabilities and its own app icon.
+   - Tap **Add**. Record will now launch full-screen with offline capabilities and its own app icon.
 
 ### Option B: Via Cloudflare Pages URL
 Deploy to Pages (instructions below) and open your `https://<project>.pages.dev` URL in Safari on iPhone, then tap **Share > Add to Home Screen**.
@@ -106,7 +140,7 @@ Cloudflare Pages automatically reads the included `public/_headers` file:
 
 ### PWA Update Flow
 When a new version is pushed to Cloudflare Pages, `vite-plugin-pwa` registers the update and displays a clean banner:
-> *"🚀 A new version of Kosh is available! [Update & Reload]"*
+> *"🚀 A new version of Record is available! [Update & Reload]"*
 
 Tapping **Update & Reload** triggers `updateServiceWorker(true)`, refreshing the cache gracefully without silently swapping state mid-session.
 
@@ -114,9 +148,9 @@ Tapping **Update & Reload** triggers `updateServiceWorker(true)`, refreshing the
 
 ## Data Model & Offline Storage
 
-- **Persistence**: Stored in IndexedDB via `idb-keyval` under the key `kosh_money_tracker_data_v1`.
+- **Persistence**: Stored in IndexedDB via `idb-keyval` under key `record_tracker_data_v1` (with automatic migration from legacy `kosh_money_tracker_data_v1`).
 - **Atomic Writes**: State is maintained in memory as arrays. Every create, update, or soft-delete writes the entire validated dataset in a single atomic record.
-- **Fail-Safe Loading**: On boot, the data is validated against `AppDataSchema` with Zod. If the data is corrupted or invalid, Kosh **fails safely** without overwriting the stored data, preserving user records.
+- **Fail-Safe Loading**: On boot, the data is validated against `AppDataSchema` with Zod. If the data is corrupted or invalid, Record **fails safely** without overwriting the stored data, preserving user records.
 - **Storage Persistence**: Requests `navigator.storage.persist()` on boot to protect IndexedDB from browser eviction under storage pressure.
 - **Backup & Restore**: In **Settings**, you can export a full JSON backup file or restore from one with strict validation.
-- **Sample Data**: Tapping **Reset to Sample Data** runs a deterministic pseudo-random generator with a fixed seed, populating ~4 months of realistic habits (salary, rent, chai breaks, weekend outings, subscriptions, impulse buys, and no-spend days).
+- **Sample Data**: Tapping **Reset to Sample Data** runs a deterministic pseudo-random generator with a fixed seed, populating ~4 months of realistic habits and portfolio holdings (salary, rent, chai breaks, weekend outings, subscriptions, mutual funds, equities, gold bonds, and no-spend days).
