@@ -295,17 +295,28 @@ export const PortfolioView: React.FC = () => {
           {/* Wide Screen Table */}
           <div className="desktop-table-wrapper">
             <table className="desktop-table">
+              <colgroup>
+                <col />
+                <col style={{ width: '130px' }} />
+                <col style={{ width: '70px' }} />
+                <col style={{ width: '95px' }} />
+                <col style={{ width: '105px' }} />
+                <col style={{ width: '95px' }} />
+                <col style={{ width: '105px' }} />
+                <col style={{ width: '110px' }} />
+                <col style={{ width: '50px' }} />
+              </colgroup>
               <thead>
                 <tr>
-                  <th style={{ minWidth: 200 }}>Asset</th>
-                  <th style={{ minWidth: 130 }}>Class</th>
-                  <th className="text-right" style={{ minWidth: 70 }}>Quantity</th>
-                  <th className="text-right" style={{ minWidth: 95 }}>Avg Buy (₹)</th>
-                  <th className="text-right" style={{ minWidth: 105 }}>Current (₹)</th>
-                  <th className="text-right" style={{ minWidth: 95 }}>Invested</th>
-                  <th className="text-right" style={{ minWidth: 105 }}>Current Value</th>
-                  <th className="text-right" style={{ minWidth: 110 }}>Gain / Loss</th>
-                  <th className="text-right" style={{ minWidth: 50 }}>Actions</th>
+                  <th>Asset</th>
+                  <th>Class</th>
+                  <th className="text-right">Quantity</th>
+                  <th className="text-right">Avg Buy (₹)</th>
+                  <th className="text-right">Current (₹)</th>
+                  <th className="text-right">Invested</th>
+                  <th className="text-right">Current Value</th>
+                  <th className="text-right">Gain / Loss</th>
+                  <th className="text-right">Actions</th>
                 </tr>
               </thead>
               <tbody>

@@ -277,14 +277,22 @@ export const LedgerView: React.FC = () => {
                 {/* Wide Screen Table */}
                 <div className="desktop-table-wrapper">
                   <table className="desktop-table">
+                    <colgroup>
+                      <col style={{ width: '95px' }} />
+                      <col style={{ width: '200px' }} />
+                      <col />
+                      <col style={{ width: '120px' }} />
+                      <col style={{ width: '135px' }} />
+                      <col style={{ width: '75px' }} />
+                    </colgroup>
                     <thead>
                       <tr>
-                        <th style={{ minWidth: 90 }}>Time</th>
-                        <th style={{ minWidth: 140 }}>Category</th>
-                        <th style={{ minWidth: 200 }}>Note</th>
-                        <th style={{ minWidth: 110 }}>Intent</th>
-                        <th className="text-right" style={{ minWidth: 120 }}>Amount (₹)</th>
-                        <th className="text-right" style={{ minWidth: 80 }}>Actions</th>
+                        <th>Time</th>
+                        <th>Category</th>
+                        <th>Note</th>
+                        <th>Intent</th>
+                        <th className="text-right">Amount (₹)</th>
+                        <th className="text-right">Actions</th>
                       </tr>
                     </thead>
                     <tbody>

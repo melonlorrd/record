@@ -777,6 +777,8 @@ button, input, select, textarea {
 
 .desktop-table {
   width: 100%;
+  min-width: 820px;
+  table-layout: fixed;
   border-collapse: separate;
   border-spacing: 0;
   font-size: 0.875rem;
