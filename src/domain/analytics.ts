@@ -921,9 +921,9 @@ export function calculatePortfolioSummary(
     : 0;
 
   const assetClassMeta: Record<AssetClass, { label: string; color: string }> = {
-    mutual_fund: { label: 'Mutual Funds', color: '#0969da' }, // GitHub Blue
-    equity: { label: 'Equity / Stocks', color: '#1a7f37' },    // GitHub Green
-    gold: { label: 'Gold (Physical & SGB)', color: '#d29922' }, // GitHub Gold
+    mutual_fund: { label: 'Mutual Funds', color: '#007aff' },  // Apple System Blue
+    equity: { label: 'Equity / Stocks', color: '#34c759' },     // Apple System Green
+    gold: { label: 'Physical Gold', color: '#ff9f0a' },         // Golden Gate / Apple System Gold
   };
 
   const allocation: AssetAllocationItem[] = (['mutual_fund', 'equity', 'gold'] as AssetClass[]).map(

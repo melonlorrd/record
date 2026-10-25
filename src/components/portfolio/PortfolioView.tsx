@@ -37,7 +37,7 @@ export const PortfolioView: React.FC = () => {
       case 'equity':
         return { label: 'Equity / Stock', icon: '📈', badgeClass: 'badge-equity' };
       case 'gold':
-        return { label: 'Gold / SGB', icon: '🥇', badgeClass: 'badge-gold' };
+        return { label: 'Physical Gold', icon: '🥇', badgeClass: 'badge-gold' };
     }
   };
 

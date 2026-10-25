@@ -153,7 +153,7 @@ export const AddHoldingModal: React.FC<AddHoldingModalProps> = ({
               className={`segmented-btn ${assetClass === 'gold' ? 'active-want' : ''}`}
               onClick={() => setAssetClass('gold')}
             >
-              🥇 Gold / SGB
+              🥇 Physical Gold
             </button>
           </div>
         </div>
@@ -171,7 +171,7 @@ export const AddHoldingModal: React.FC<AddHoldingModalProps> = ({
                 ? 'e.g. Parag Parikh Flexi Cap Fund'
                 : assetClass === 'equity'
                 ? 'e.g. HDFC Bank Ltd'
-                : 'e.g. Sovereign Gold Bond 2030'
+                : 'e.g. 24K Minted Gold Coins (999 Purity)'
             }
             value={name}
             onChange={(e) => setName(e.target.value)}
@@ -191,7 +191,7 @@ export const AddHoldingModal: React.FC<AddHoldingModalProps> = ({
                 ? 'e.g. HDFCBANK'
                 : assetClass === 'mutual_fund'
                 ? 'e.g. PPFCF-DIR'
-                : 'e.g. SGB2030IV'
+                : 'e.g. PHYSICAL_GOLD_24K'
             }
             value={symbolOrFolio}
             onChange={(e) => setSymbolOrFolio(e.target.value)}
