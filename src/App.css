@@ -116,10 +116,16 @@ button, input, select, textarea {
   position: sticky;
   top: 0;
   z-index: 40;
-  background-color: var(--bg-surface);
+  background-color: rgba(18, 18, 20, 0.95);
   border-bottom: 1px solid var(--border-color);
-  backdrop-filter: blur(25px) saturate(190%);
-  -webkit-backdrop-filter: blur(25px) saturate(190%);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+}
+
+[data-theme="light"] .top-navbar {
+  background-color: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
 }
 
 .top-navbar-content {
@@ -207,6 +213,15 @@ button, input, select, textarea {
   color: var(--text-primary);
 }
 
+.desktop-nav-btn:focus {
+  outline: none;
+}
+
+.desktop-nav-btn:focus-visible {
+  outline: 2px solid var(--brand-primary);
+  outline-offset: -1px;
+}
+
 .desktop-nav-btn.active {
   background-color: var(--bg-card);
   color: var(--brand-primary);
@@ -234,7 +249,7 @@ button, input, select, textarea {
 
 /* Main Content Area */
 .main-content {
-  max-width: 1100px;
+  max-width: 1200px;
   width: 100%;
   margin: 0 auto;
   padding: 16px;
@@ -534,24 +549,28 @@ button, input, select, textarea {
 .intent-badge {
   font-size: 0.75rem;
   font-weight: 600;
-  padding: 2px 8px;
-  border-radius: var(--radius-full);
+  padding: 3px 8px;
+  border-radius: 6px;
   white-space: nowrap;
+  line-height: 1.2;
 }
 
 .intent-need {
-  background-color: rgba(16, 185, 129, 0.15);
+  background-color: rgba(48, 209, 88, 0.15);
   color: var(--color-need);
+  border: 1px solid rgba(48, 209, 88, 0.25);
 }
 
 .intent-want {
-  background-color: rgba(245, 158, 11, 0.15);
+  background-color: rgba(255, 159, 10, 0.15);
   color: var(--color-want);
+  border: 1px solid rgba(255, 159, 10, 0.25);
 }
 
 .intent-impulse {
-  background-color: rgba(139, 92, 246, 0.15);
+  background-color: rgba(191, 90, 242, 0.15);
   color: var(--color-impulse);
+  border: 1px solid rgba(191, 90, 242, 0.25);
 }
 
 /* Ledger View */
@@ -747,26 +766,39 @@ button, input, select, textarea {
   .desktop-table-wrapper {
     display: block;
     overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-color);
+    background-color: var(--bg-card);
+    box-shadow: var(--shadow-sm);
   }
 }
 
 .desktop-table {
   width: 100%;
-  border-collapse: collapse;
-  font-size: 0.9rem;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.875rem;
 }
 
 .desktop-table th, .desktop-table td {
-  padding: 10px 14px;
-  border-bottom: 1px solid var(--border-color);
-  text-align: left;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border-subtle);
+  vertical-align: middle;
 }
 
 .desktop-table th {
   font-weight: 600;
   color: var(--text-muted);
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   text-transform: uppercase;
+  letter-spacing: 0.04em;
+  background-color: var(--bg-input);
+  white-space: nowrap;
+}
+
+.desktop-table tbody tr:last-child td {
+  border-bottom: none;
 }
 
 .desktop-table tbody tr:hover {
@@ -2008,26 +2040,31 @@ button, input, select, textarea {
 .asset-class-badge {
   font-size: 0.75rem;
   font-weight: 600;
-  padding: 2px 8px;
-  border-radius: var(--radius-full);
+  padding: 4px 10px;
+  border-radius: 6px;
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 5px;
+  white-space: nowrap;
+  line-height: 1.2;
 }
 
 .badge-mf {
   background-color: rgba(0, 122, 255, 0.15);
   color: #0a84ff;
+  border: 1px solid rgba(0, 122, 255, 0.25);
 }
 
 .badge-equity {
   background-color: rgba(52, 199, 89, 0.15);
   color: #30d158;
+  border: 1px solid rgba(52, 199, 89, 0.25);
 }
 
 .badge-gold {
   background-color: rgba(255, 159, 10, 0.15);
   color: #ff9f0a;
+  border: 1px solid rgba(255, 159, 10, 0.25);
 }
 
 .holding-icon-badge {
@@ -2038,7 +2075,7 @@ button, input, select, textarea {
 .holding-table-name {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 3px;
 }
 
 .gain-pill {

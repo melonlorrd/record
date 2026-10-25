@@ -293,19 +293,19 @@ export const PortfolioView: React.FC = () => {
           </div>
 
           {/* Wide Screen Table */}
-          <div className="desktop-table-wrapper card">
+          <div className="desktop-table-wrapper">
             <table className="desktop-table">
               <thead>
                 <tr>
-                  <th>Asset</th>
-                  <th>Class</th>
-                  <th>Quantity</th>
-                  <th>Avg Buy (₹)</th>
-                  <th>Current Price (₹)</th>
-                  <th className="text-right">Invested</th>
-                  <th className="text-right">Current Value</th>
-                  <th className="text-right">Gain / Loss</th>
-                  <th className="text-right">Actions</th>
+                  <th style={{ minWidth: 200 }}>Asset</th>
+                  <th style={{ minWidth: 130 }}>Class</th>
+                  <th className="text-right" style={{ minWidth: 70 }}>Quantity</th>
+                  <th className="text-right" style={{ minWidth: 95 }}>Avg Buy (₹)</th>
+                  <th className="text-right" style={{ minWidth: 105 }}>Current (₹)</th>
+                  <th className="text-right" style={{ minWidth: 95 }}>Invested</th>
+                  <th className="text-right" style={{ minWidth: 105 }}>Current Value</th>
+                  <th className="text-right" style={{ minWidth: 110 }}>Gain / Loss</th>
+                  <th className="text-center" style={{ minWidth: 50 }}>Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -329,18 +329,20 @@ export const PortfolioView: React.FC = () => {
                           {meta.icon} {meta.label}
                         </span>
                       </td>
-                      <td className="font-medium">{h.units}</td>
-                      <td className="text-muted">₹{(h.buyAvgPriceCents / 100).toFixed(2)}</td>
-                      <td className="font-medium">₹{(h.currentNavOrPriceCents / 100).toFixed(2)}</td>
-                      <td className="text-right text-muted">{formatINR(h.investedCents)}</td>
-                      <td className="text-right font-semibold">{formatINR(h.currentValueCents)}</td>
-                      <td className={`text-right font-semibold ${isProfit ? 'income-text' : 'expense-text'}`}>
-                        {isProfit ? '+' : ''}{formatINR(h.gainCents)}
-                        <div className="small-text">
+                      <td className="text-right font-medium tabular-nums">{h.units}</td>
+                      <td className="text-right text-muted tabular-nums">₹{(h.buyAvgPriceCents / 100).toFixed(2)}</td>
+                      <td className="text-right font-medium tabular-nums">₹{(h.currentNavOrPriceCents / 100).toFixed(2)}</td>
+                      <td className="text-right text-muted tabular-nums">{formatINR(h.investedCents)}</td>
+                      <td className="text-right font-semibold tabular-nums">{formatINR(h.currentValueCents)}</td>
+                      <td className={`text-right font-semibold tabular-nums ${isProfit ? 'income-text' : 'expense-text'}`}>
+                        <div style={{ whiteSpace: 'nowrap' }}>
+                          {isProfit ? '+' : ''}{formatINR(h.gainCents)}
+                        </div>
+                        <div className="small-text" style={{ whiteSpace: 'nowrap' }}>
                           ({isProfit ? '+' : ''}{h.gainPercent}%)
                         </div>
                       </td>
-                      <td className="text-right">
+                      <td className="text-center">
                         <button
                           type="button"
                           className="btn-icon"
