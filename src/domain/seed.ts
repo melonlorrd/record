@@ -99,80 +99,142 @@ export const SEED_CATEGORIES: Category[] = [
 export const SEED_HOLDINGS: PortfolioHolding[] = [
   {
     id: 'd1111111-1111-4111-8111-111111111111',
-    assetClass: 'mutual_fund',
-    name: 'Parag Parikh Flexi Cap Fund (Direct-Growth)',
-    symbolOrFolio: 'PPFCF-DIR-G',
-    units: 185.342,
-    buyAvgPriceCents: 5420,       // ₹54.20 per unit
-    currentNavOrPriceCents: 7685, // ₹76.85 per unit (+41.8%)
-    notes: 'Long-term equity SIP holding with global diversification',
+    assetClass: 'gold',
+    name: 'Physical Gold 24K Minted Coins (999 Purity)',
+    symbolOrFolio: 'PHYSICAL_GOLD_24K',
+    sector: 'Physical Bullion / Commodities',
+    units: 20,
+    buyAvgPriceCents: 1208715,     // ₹12,087.15 / gram (Principal ₹2,41,743.00)
+    currentNavOrPriceCents: 1527464, // ₹15,274.64 / gram (Current ₹3,05,492.80, +26.4%)
+    notes: '20g 24K minted gold coins in vault (cost ₹2,41,743)',
     createdAt: 1720000000000,
-    updatedAt: 1720000000000,
+    updatedAt: 1727827200000,
     deleted: false,
   },
   {
     id: 'd2222222-2222-4222-8222-222222222222',
     assetClass: 'mutual_fund',
-    name: 'UTI Nifty 50 Index Fund (Direct-Growth)',
-    symbolOrFolio: 'UTI-N50-DIR',
-    units: 310.125,
-    buyAvgPriceCents: 11250,      // ₹112.50 per unit
-    currentNavOrPriceCents: 15840,// ₹158.40 per unit (+40.8%)
-    notes: 'Core passive market index foundation',
+    name: 'Parag Parikh Flexi Cap Fund - Direct Plan - Growth',
+    symbolOrFolio: 'PPFAS_FLEXI',
+    sector: 'Flexi Cap Equity / Mutual Fund',
+    units: 684.797,
+    buyAvgPriceCents: 9053,        // ₹90.53 / unit (Principal ₹61,994.67)
+    currentNavOrPriceCents: 8898,  // ₹88.98 / unit (Current ₹60,931.18, -1.7%)
+    notes: 'Parag Parikh Flexi Cap Fund Direct Plan (AMFI: 122639)',
     createdAt: 1720000000000,
-    updatedAt: 1720000000000,
+    updatedAt: 1727827200000,
     deleted: false,
   },
   {
     id: 'd3333333-3333-4333-8333-333333333333',
     assetClass: 'equity',
-    name: 'HDFC Bank Ltd',
-    symbolOrFolio: 'HDFCBANK.NS',
-    units: 45,
-    buyAvgPriceCents: 148000,     // ₹1,480.00
-    currentNavOrPriceCents: 168550,// ₹1,685.50 (+13.9%)
-    notes: 'Private banking anchor',
+    name: 'Hyundai Motor India Limited',
+    symbolOrFolio: 'HYUNDAI.NS',
+    sector: 'Automobiles & Passenger Vehicles',
+    units: 7,
+    buyAvgPriceCents: 182290,      // ₹1,822.90 (Principal ₹12,760.30)
+    currentNavOrPriceCents: 207840,// ₹2,078.40 (Current ₹14,548.80, +14.0%)
+    notes: 'NSE holding (Creta, Talegaon)',
     createdAt: 1720000000000,
-    updatedAt: 1720000000000,
+    updatedAt: 1727827200000,
     deleted: false,
   },
   {
     id: 'd4444444-4444-4444-8444-444444444444',
     assetClass: 'equity',
-    name: 'Infosys Ltd',
-    symbolOrFolio: 'INFY.NS',
-    units: 30,
-    buyAvgPriceCents: 136000,     // ₹1,360.00
-    currentNavOrPriceCents: 182000,// ₹1,820.00 (+33.8%)
-    notes: 'IT services compounding bet',
+    name: 'Bharat Electronics Limited',
+    symbolOrFolio: 'BEL.NS',
+    sector: 'Defence Electronics & Strategic Avionics',
+    units: 15,
+    buyAvgPriceCents: 39800,       // ₹398.00 (Principal ₹5,970.00)
+    currentNavOrPriceCents: 38635, // ₹386.35 (Current ₹5,795.25, -2.9%)
+    notes: '15 shares @ ₹398.00 (NSE)',
     createdAt: 1720000000000,
-    updatedAt: 1720000000000,
+    updatedAt: 1727827200000,
     deleted: false,
   },
   {
     id: 'd5555555-5555-4555-8555-555555555555',
-    assetClass: 'gold',
-    name: 'Sovereign Gold Bond 2030 (Series IV)',
-    symbolOrFolio: 'SGB2030IV',
-    units: 8,                      // 8 grams
-    buyAvgPriceCents: 540000,     // ₹5,400.00 / gram
-    currentNavOrPriceCents: 785000,// ₹7,850.00 / gram (+45.4%)
-    notes: 'Tax-free sovereign gold with 2.5% p.a. semi-annual coupon',
+    assetClass: 'equity',
+    name: 'Bharat Heavy Electricals Limited',
+    symbolOrFolio: 'BHEL.NS',
+    sector: 'Heavy Electrical Equipment & Capital Goods',
+    units: 10,
+    buyAvgPriceCents: 23435,       // ₹234.35 (Principal ₹2,343.50)
+    currentNavOrPriceCents: 41560, // ₹415.60 (Current ₹4,156.00, +77.3%)
+    notes: 'NSE holding (Thermal Power & Vande Bharat)',
     createdAt: 1720000000000,
-    updatedAt: 1720000000000,
+    updatedAt: 1727827200000,
     deleted: false,
   },
   {
     id: 'd6666666-6666-4666-8666-666666666666',
-    assetClass: 'gold',
-    name: '24K Digital Gold / Vaulted Bullion',
-    symbolOrFolio: 'GOLD-24K',
-    units: 5,                      // 5 grams
-    buyAvgPriceCents: 620000,     // ₹6,200.00 / gram
-    currentNavOrPriceCents: 785000,// ₹7,850.00 / gram (+26.6%)
-    notes: 'Liquid bullion hedge',
+    assetClass: 'equity',
+    name: 'National Aluminium Company Ltd',
+    symbolOrFolio: 'NATIONALUM.BO',
+    sector: 'Metals & Mining',
+    units: 10,
+    buyAvgPriceCents: 38000,       // ₹380.00 (Principal ₹3,800.00)
+    currentNavOrPriceCents: 34535, // ₹345.35 (Current ₹3,453.50, -9.1%)
+    notes: 'BSE holding (Damanjodi, Utkal D)',
     createdAt: 1720000000000,
-    updatedAt: 1720000000000,
+    updatedAt: 1727827200000,
+    deleted: false,
+  },
+  {
+    id: 'd7777777-7777-4777-8777-777777777777',
+    assetClass: 'equity',
+    name: 'NTPC Limited',
+    symbolOrFolio: 'NTPC.BO',
+    sector: 'Power Generation & Clean Energy',
+    units: 10,
+    buyAvgPriceCents: 38939,       // ₹389.39 (Principal ₹3,893.90)
+    currentNavOrPriceCents: 32115, // ₹321.15 (Current ₹3,211.50, -17.5%)
+    notes: 'BSE holding (NTPC Green Energy / Renewables)',
+    createdAt: 1720000000000,
+    updatedAt: 1727827200000,
+    deleted: false,
+  },
+  {
+    id: 'd8888888-8888-4888-8888-888888888888',
+    assetClass: 'equity',
+    name: 'Tata Power Company Limited',
+    symbolOrFolio: 'TATAPOWER.BO',
+    sector: 'Utilities, Renewables & EV Infrastructure',
+    units: 5,
+    buyAvgPriceCents: 44119,       // ₹441.19 (Principal ₹2,205.95)
+    currentNavOrPriceCents: 35845, // ₹358.45 (Current ₹1,792.25, -18.8%)
+    notes: 'BSE holding (TPREL, Rooftop Solar, EV Charging)',
+    createdAt: 1720000000000,
+    updatedAt: 1727827200000,
+    deleted: false,
+  },
+  {
+    id: 'd9999999-9999-4999-8999-999999999999',
+    assetClass: 'equity',
+    name: 'Infosys Limited',
+    symbolOrFolio: 'INFY.NS',
+    sector: 'Information Technology & Enterprise AI',
+    units: 1,
+    buyAvgPriceCents: 194400,      // ₹1,944.00 (Principal ₹1,944.00)
+    currentNavOrPriceCents: 102100,// ₹1,021.00 (Current ₹1,021.00, -47.5%)
+    notes: 'NSE holding (Topaz, Finacle)',
+    createdAt: 1720000000000,
+    updatedAt: 1727827200000,
+    deleted: false,
+  },
+  {
+    id: 'daaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
+    assetClass: 'equity',
+    name: 'Tejas Networks Limited',
+    symbolOrFolio: 'TEJASNET.BO',
+    sector: 'Telecommunication Equipment & Optical Networking',
+    units: 1,
+    buyAvgPriceCents: 119410,      // ₹1,194.10 (Principal ₹1,194.10)
+    currentNavOrPriceCents: 49430, // ₹494.30 (Current ₹494.30, -58.6%)
+    notes: 'BSE holding (BSNL 4G, Tata Sons)',
+    createdAt: 1720000000000,
+    updatedAt: 1727827200000,
     deleted: false,
   },
 ];

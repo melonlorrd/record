@@ -59,6 +59,7 @@ export const PortfolioHoldingSchema = z.object({
   assetClass: AssetClassSchema,
   name: z.string().min(1),             // e.g. "Parag Parikh Flexi Cap Fund", "HDFC Bank", "Sovereign Gold Bond"
   symbolOrFolio: z.string(),          // e.g. "PPFCF-G", "HDFCBANK", "SGB2030"
+  sector: z.string().optional(),       // e.g. "Defence Electronics", "Automobiles", "Metals & Mining"
   units: z.number().positive(),       // Decimal units (e.g. 245.521 units, 15 shares, 10.5 grams)
   buyAvgPriceCents: z.number().int().positive(),   // Purchase price per unit in integer cents
   currentNavOrPriceCents: z.number().int().positive(), // Current market price/NAV in integer cents

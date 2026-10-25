@@ -838,6 +838,8 @@ export interface AssetAllocationItem {
   totalInvestedCents: number;
   totalCurrentValueCents: number;
   percentage: number;
+  targetPercent: number;
+  driftPercent: number;
   holdingsCount: number;
 }
 
@@ -854,6 +856,18 @@ export interface PortfolioSummary {
 export function getActiveHoldings(holdings: readonly PortfolioHolding[]): PortfolioHolding[] {
   return holdings.filter((h) => !h.deleted);
 }
+
+/**
+ * Target allocations from investment policy (Analyzer targets.yaml):
+ * - Direct Equities: 15.0%
+ * - Mutual Funds: 35.0%
+ * - Gold / Commodities: 40.0%
+ */
+export const TARGET_ALLOCATION_PERCENTS: Record<AssetClass, number> = {
+  equity: 15.0,
+  mutual_fund: 35.0,
+  gold: 40.0,
+};
 
 /**
  * Calculates portfolio performance, unrealized gains, and asset allocation across
@@ -918,6 +932,8 @@ export function calculatePortfolioSummary(
       const pct = totalCurrentValueCents > 0
         ? Math.round((stat.current / totalCurrentValueCents) * 1000) / 10
         : 0;
+      const targetPercent = TARGET_ALLOCATION_PERCENTS[cls];
+      const driftPercent = Math.round((pct - targetPercent) * 10) / 10;
 
       return {
         assetClass: cls,
@@ -926,6 +942,8 @@ export function calculatePortfolioSummary(
         totalInvestedCents: stat.invested,
         totalCurrentValueCents: stat.current,
         percentage: pct,
+        targetPercent,
+        driftPercent,
         holdingsCount: stat.count,
       };
     }

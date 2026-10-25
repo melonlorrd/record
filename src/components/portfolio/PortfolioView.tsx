@@ -150,14 +150,27 @@ export const PortfolioView: React.FC = () => {
         </div>
 
         <div className="allocation-legend-grid">
-          {summary.allocation.map((item) => (
-            <div key={item.assetClass} className="allocation-legend-item">
-              <span className="pill-dot" style={{ backgroundColor: item.color }} />
-              <span className="font-semibold">{item.label}:</span>
-              <span>{formatINR(item.totalCurrentValueCents, { compactIfZeroPaise: true })}</span>
-              <span className="text-muted">({item.percentage}%)</span>
-            </div>
-          ))}
+          {summary.allocation.map((item) => {
+            const isOverweight = item.driftPercent > 0;
+            return (
+              <div key={item.assetClass} className="allocation-legend-item">
+                <div className="allocation-legend-row">
+                  <span className="pill-dot" style={{ backgroundColor: item.color }} />
+                  <span className="font-semibold">{item.label}</span>
+                </div>
+                <div className="allocation-legend-stats">
+                  <span className="font-semibold">{formatINR(item.totalCurrentValueCents, { compactIfZeroPaise: true })}</span>
+                  <span className="text-muted">({item.percentage}%)</span>
+                </div>
+                <div className="allocation-drift-row small-text">
+                  <span className="text-muted">Target: {item.targetPercent}%</span>
+                  <span className={`drift-badge ${isOverweight ? 'overweight' : 'underweight'}`}>
+                    Drift: {isOverweight ? `+${item.driftPercent}%` : `${item.driftPercent}%`}
+                  </span>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
 
@@ -251,6 +264,12 @@ export const PortfolioView: React.FC = () => {
                         </span>
                       </div>
                       <div className="entry-subtitle-row">
+                        {h.sector && (
+                          <>
+                            <span className="text-muted">{h.sector}</span>
+                            <span className="entry-dot-separator">•</span>
+                          </>
+                        )}
                         <span>{h.units} units</span>
                         <span className="entry-dot-separator">•</span>
                         <span>Avg ₹{(h.buyAvgPriceCents / 100).toFixed(2)}</span>
@@ -299,9 +318,10 @@ export const PortfolioView: React.FC = () => {
                       <td>
                         <div className="holding-table-name">
                           <span className="font-semibold">{h.name}</span>
-                          {h.symbolOrFolio && (
-                            <span className="text-muted small-text">{h.symbolOrFolio}</span>
-                          )}
+                          <div className="small-text text-muted">
+                            {h.symbolOrFolio}
+                            {h.sector ? ` • ${h.sector}` : ''}
+                          </div>
                         </div>
                       </td>
                       <td>
