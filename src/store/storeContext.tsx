@@ -65,6 +65,8 @@ export interface ToastState {
   durationMs?: number;
 }
 
+export type GlassIntensity = 'clear' | 'refined' | 'tinted';
+
 export interface StoreContextValue {
   isLoaded: boolean;
   isPersistedStorage: boolean;
@@ -74,8 +76,10 @@ export interface StoreContextValue {
   activeCategories: Category[];
   holdings: PortfolioHolding[];
   theme: 'dark' | 'light';
+  glassIntensity: GlassIntensity;
   toast: ToastState | null;
   toggleTheme: () => void;
+  setGlassIntensity: (intensity: GlassIntensity) => void;
   showToast: (toast: Omit<ToastState, 'id'>) => void;
   hideToast: () => void;
   addEntry: (input: CreateEntryInput) => Promise<string>;
@@ -114,7 +118,15 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     return 'dark';
   });
 
-  // Apply theme class to document body
+  const [glassIntensity, setGlassIntensityState] = useState<GlassIntensity>(() => {
+    try {
+      const saved = localStorage.getItem('record_glass_intensity');
+      if (saved === 'clear' || saved === 'refined' || saved === 'tinted') return saved;
+    } catch {}
+    return 'refined';
+  });
+
+  // Apply theme and glass attributes to document
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
     try {
@@ -122,8 +134,19 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     } catch {}
   }, [theme]);
 
+  useEffect(() => {
+    document.documentElement.setAttribute('data-glass', glassIntensity);
+    try {
+      localStorage.setItem('record_glass_intensity', glassIntensity);
+    } catch {}
+  }, [glassIntensity]);
+
   const toggleTheme = useCallback(() => {
     setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
+  }, []);
+
+  const setGlassIntensity = useCallback((intensity: GlassIntensity) => {
+    setGlassIntensityState(intensity);
   }, []);
 
   const hideToast = useCallback(() => {
@@ -502,8 +525,10 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     activeCategories,
     holdings: data.holdings || [],
     theme,
+    glassIntensity,
     toast,
     toggleTheme,
+    setGlassIntensity,
     showToast,
     hideToast,
     addEntry,

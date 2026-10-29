@@ -7,7 +7,9 @@ export const SettingsView: React.FC = () => {
     entries,
     categories,
     theme,
+    glassIntensity,
     toggleTheme,
+    setGlassIntensity,
     isPersistedStorage,
     exportJSON,
     importJSON,
@@ -68,17 +70,49 @@ export const SettingsView: React.FC = () => {
 
       {/* Theme & Display */}
       <div className="settings-section card">
-        <h3 className="section-subtitle">Appearance</h3>
+        <h3 className="section-subtitle">Appearance & Materials</h3>
         <div className="settings-row">
           <div>
-            <div className="setting-title">Color Theme</div>
+            <div className="setting-title">Color Scheme</div>
             <div className="setting-description text-muted">
-              Toggle between Dark and Light mode. Currently: <b>{theme}</b>
+              Toggle between Apple OLED Dark and Light mode. Currently: <b>{theme === 'dark' ? 'Dark' : 'Light'}</b>
             </div>
           </div>
-          <button type="button" className="btn btn-secondary" onClick={toggleTheme}>
+          <button type="button" className="btn btn-secondary btn-sm" onClick={toggleTheme}>
             {theme === 'dark' ? '☀️ Switch to Light' : '🌙 Switch to Dark'}
           </button>
+        </div>
+
+        <div className="settings-row" style={{ marginTop: '16px', paddingTop: '16px', borderTop: '1px solid var(--border-subtle)' }}>
+          <div>
+            <div className="setting-title">Liquid Glass Material</div>
+            <div className="setting-description text-muted">
+              Adjust diffusion, translucency, and refraction across toolbars and navigation.
+            </div>
+          </div>
+          <div className="segmented-control" role="group" aria-label="Liquid Glass Material">
+            <button
+              type="button"
+              className={`segmented-btn ${glassIntensity === 'clear' ? 'active' : ''}`}
+              onClick={() => setGlassIntensity('clear')}
+            >
+              Clear
+            </button>
+            <button
+              type="button"
+              className={`segmented-btn ${glassIntensity === 'refined' ? 'active' : ''}`}
+              onClick={() => setGlassIntensity('refined')}
+            >
+              Refined
+            </button>
+            <button
+              type="button"
+              className={`segmented-btn ${glassIntensity === 'tinted' ? 'active' : ''}`}
+              onClick={() => setGlassIntensity('tinted')}
+            >
+              Tinted
+            </button>
+          </div>
         </div>
       </div>
 

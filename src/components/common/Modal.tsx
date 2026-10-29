@@ -22,6 +22,7 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children }
   return (
     <div className="modal-overlay" onClick={onClose} role="dialog" aria-modal="true" aria-labelledby="modal-title">
       <div className="modal-card" onClick={(e) => e.stopPropagation()}>
+        <div className="sheet-grabber" aria-hidden="true" />
         <div className="modal-header">
           <h2 id="modal-title" className="modal-title">{title}</h2>
           <button type="button" className="modal-close-btn" onClick={onClose} aria-label="Close dialog">

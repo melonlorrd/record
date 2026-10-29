@@ -1,78 +1,171 @@
 /* ============================================================================
    RECORD PWA STYLESHEET
-   Offline-first Personal Money & Portfolio Tracker
-   Apple macOS Golden Gate & iOS System Aesthetics
+   Apple iOS 27 & macOS 27: Refined "Liquid Glass" Design System
+   Content-first, legible, calm, and native aesthetics.
    ============================================================================ */
 
 :root {
-  /* Apple Dark Mode Palette (Golden Gate Accent) */
+  /* Liquid Glass Material Defaults (Refined Mode) */
+  --glass-blur: 28px;
+  --glass-saturate: 165%;
+  --glass-opacity: 0.68;
+  --glass-fill: rgba(26, 26, 30, var(--glass-opacity));
+  --glass-border: rgba(255, 255, 255, 0.12);
+  --glass-highlight: rgba(255, 255, 255, 0.22);
+  --glass-shadow: 0 12px 36px rgba(0, 0, 0, 0.32);
+  --glass-specular: inset 0 0.5px 0 var(--glass-highlight), 0 8px 32px rgba(0, 0, 0, 0.28);
+
+  /* Content First: Solid, Calming, Highly Legible Surfaces */
   --bg-primary: #000000;
-  --bg-surface: rgba(28, 28, 30, 0.82);
-  --bg-card: rgba(28, 28, 30, 0.72);
-  --bg-card-hover: rgba(44, 44, 46, 0.85);
-  --bg-input: rgba(118, 118, 128, 0.22);
-  --border-color: rgba(255, 255, 255, 0.12);
-  --border-subtle: rgba(255, 255, 255, 0.07);
+  --bg-surface: #121214;
+  --bg-card: #18181c;
+  --bg-card-subtle: #1f1f24;
+  --bg-card-hover: #26262c;
+  --bg-input: rgba(118, 118, 128, 0.18);
+  --sheet-fill: #1c1c1e;
+  --border-color: rgba(255, 255, 255, 0.10);
+  --border-subtle: rgba(255, 255, 255, 0.06);
 
+  /* Typography */
   --text-primary: #ffffff;
-  --text-secondary: #aeaeb2;
-  --text-muted: #8e8e93;
+  --text-secondary: #a1a1a6;
+  --text-muted: #787880;
 
-  /* Golden Gate Warm Amber / Gold Primary */
-  --brand-primary: #ff9f0a;
-  --brand-primary-hover: #ffb340;
-  --brand-accent: #ff6b00;
-  --brand-gradient: linear-gradient(135deg, #ff9f0a 0%, #ff5e3a 100%);
+  /* Primary Accent: Apple System Blue (iOS 27 Sapphire / Azure) */
+  --brand-primary: #0a84ff;
+  --brand-primary-hover: #409cff;
+  --brand-primary-tint: rgba(10, 132, 255, 0.15);
+  --brand-gradient: linear-gradient(135deg, #0a84ff 0%, #0066cc 100%);
+  --brand-glow: 0 0 20px rgba(10, 132, 255, 0.35);
 
-  /* Apple System Status Colors */
+  /* Semantic Status Colors */
   --color-income: #30d158;
   --color-expense: #ff453a;
   --color-need: #30d158;
   --color-want: #ff9f0a;
   --color-impulse: #bf5af2;
+  --color-gold: #f5a623;
 
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.35);
-  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.45);
-  --shadow-lg: 0 12px 36px rgba(0, 0, 0, 0.65);
-
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --radius-xl: 22px;
+  /* Concentric Radii (Inner = Outer - Padding) */
+  --radius-xs: 6px;
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 18px;
+  --radius-card: 22px;
+  --radius-sheet: 28px;
   --radius-full: 9999px;
 
+  /* Typography Stacks */
   --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "SF Pro", -apple-system-ui-sans, "Helvetica Neue", sans-serif;
+  --font-mono: ui-monospace, "SF Mono", "Menlo", monospace;
+
+  /* Motion Curves (Apple Spring) */
+  --transition-spring: 260ms cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-fast: 160ms cubic-bezier(0.16, 1, 0.3, 1);
+
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.22);
+  --shadow-md: 0 6px 20px rgba(0, 0, 0, 0.30);
+  --shadow-lg: 0 16px 44px rgba(0, 0, 0, 0.45);
+
   --safe-bottom: env(safe-area-inset-bottom, 0px);
 }
 
+/* Glass Intensity Variations */
+:root[data-glass="clear"] {
+  --glass-blur: 38px;
+  --glass-saturate: 185%;
+  --glass-opacity: 0.46;
+}
+
+:root[data-glass="refined"] {
+  --glass-blur: 28px;
+  --glass-saturate: 165%;
+  --glass-opacity: 0.68;
+}
+
+:root[data-glass="tinted"] {
+  --glass-blur: 18px;
+  --glass-saturate: 135%;
+  --glass-opacity: 0.90;
+}
+
+/* Apple Light Mode Palette */
 [data-theme="light"] {
-  /* Apple Light Mode Palette (Golden Gate Accent) */
+  --glass-fill: rgba(255, 255, 255, var(--glass-opacity));
+  --glass-border: rgba(0, 0, 0, 0.08);
+  --glass-highlight: rgba(255, 255, 255, 0.85);
+  --glass-specular: inset 0 0.5px 0 var(--glass-highlight), 0 8px 28px rgba(0, 0, 0, 0.06);
+  --glass-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
+
   --bg-primary: #f2f2f7;
-  --bg-surface: rgba(255, 255, 255, 0.88);
-  --bg-card: rgba(255, 255, 255, 0.85);
-  --bg-card-hover: rgba(255, 255, 255, 0.95);
-  --bg-input: rgba(118, 118, 128, 0.1);
-  --border-color: rgba(0, 0, 0, 0.09);
-  --border-subtle: rgba(0, 0, 0, 0.05);
+  --bg-surface: #e5e5ea;
+  --bg-card: #ffffff;
+  --bg-card-subtle: #fbfbfd;
+  --bg-card-hover: #f2f2f7;
+  --bg-input: rgba(118, 118, 128, 0.09);
+  --sheet-fill: #ffffff;
+  --border-color: rgba(0, 0, 0, 0.08);
+  --border-subtle: rgba(0, 0, 0, 0.04);
 
   --text-primary: #1c1c1e;
   --text-secondary: #636366;
   --text-muted: #8e8e93;
 
-  --brand-primary: #d97706;
-  --brand-primary-hover: #b45309;
-  --brand-accent: #f59e0b;
-  --brand-gradient: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%);
+  --brand-primary: #007aff;
+  --brand-primary-hover: #0056b3;
+  --brand-primary-tint: rgba(0, 122, 255, 0.12);
+  --brand-gradient: linear-gradient(135deg, #007aff 0%, #0056b3 100%);
+  --brand-glow: 0 0 20px rgba(0, 122, 255, 0.25);
 
-  --color-income: #34c759;
-  --color-expense: #ff3b30;
-  --color-need: #34c759;
-  --color-want: #d97706;
-  --color-impulse: #af52de;
+  --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 6px 16px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 16px 36px rgba(0, 0, 0, 0.10);
+}
 
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08);
-  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.12);
+/* Accessibility: Reduce Transparency */
+@media (prefers-reduced-transparency: reduce) {
+  :root {
+    --glass-blur: 0px;
+    --glass-saturate: 100%;
+    --glass-opacity: 1;
+    --glass-fill: var(--bg-card);
+  }
+  .top-navbar,
+  .tab-bar-container,
+  .modal-card,
+  .desktop-nav-links,
+  .fab-add-btn {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    background-color: var(--bg-card) !important;
+  }
+}
+
+/* Accessibility: Increase Contrast */
+@media (prefers-contrast: more) {
+  :root {
+    --border-color: rgba(255, 255, 255, 0.35);
+    --border-subtle: rgba(255, 255, 255, 0.20);
+    --glass-border: rgba(255, 255, 255, 0.45);
+    --text-secondary: #d1d1d6;
+    --text-muted: #aeaeb2;
+  }
+  [data-theme="light"] {
+    --border-color: rgba(0, 0, 0, 0.45);
+    --border-subtle: rgba(0, 0, 0, 0.25);
+    --glass-border: rgba(0, 0, 0, 0.40);
+    --text-secondary: #3a3a3c;
+    --text-muted: #48484a;
+  }
+}
+
+/* Accessibility: Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
 /* Base Reset */
@@ -88,6 +181,7 @@ body {
   color: var(--text-primary);
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   -webkit-tap-highlight-color: transparent;
   min-height: 100vh;
 }
@@ -102,36 +196,36 @@ button, input, select, textarea {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  padding-bottom: calc(72px + var(--safe-bottom));
+  padding-bottom: calc(96px + var(--safe-bottom));
 }
 
 @media (min-width: 768px) {
   .app-layout {
-    padding-bottom: 32px;
+    padding-bottom: 36px;
   }
 }
 
-/* Top Navigation Bar */
+/* Top Navigation Bar: macOS 27 Liquid Glass Toolbar */
 .top-navbar {
   position: sticky;
   top: 0;
   z-index: 40;
-  background-color: rgba(18, 18, 20, 0.95);
-  border-bottom: 1px solid var(--border-color);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+  background-color: var(--glass-fill);
+  border-bottom: 0.5px solid var(--glass-border);
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  box-shadow: inset 0 -0.5px 0 var(--glass-highlight), 0 4px 20px rgba(0, 0, 0, 0.18);
+  transition: background-color var(--transition-spring), backdrop-filter var(--transition-spring);
 }
 
 [data-theme="light"] .top-navbar {
-  background-color: rgba(255, 255, 255, 0.96);
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  box-shadow: inset 0 -0.5px 0 var(--glass-highlight), 0 2px 10px rgba(0, 0, 0, 0.04);
 }
 
 .top-navbar-content {
-  max-width: 1100px;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 12px 16px;
+  padding: 12px 20px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -147,31 +241,32 @@ button, input, select, textarea {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 38px;
-  height: 38px;
+  width: 36px;
+  height: 36px;
   background: var(--brand-gradient);
   color: #ffffff;
-  font-size: 20px;
+  font-size: 1.2rem;
   font-weight: 700;
-  border-radius: var(--radius-md);
-  box-shadow: 0 4px 14px rgba(255, 159, 10, 0.35);
+  border-radius: 11px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 4px 14px rgba(10, 132, 255, 0.35);
+  letter-spacing: -0.02em;
 }
 
 .brand-title {
   font-size: 1.25rem;
   font-weight: 700;
   line-height: 1.2;
-  letter-spacing: -0.022em;
+  letter-spacing: -0.025em;
 }
 
 .brand-badge {
   font-size: 0.65rem;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  background-color: rgba(255, 159, 10, 0.15);
+  letter-spacing: 0.06em;
+  background-color: var(--brand-primary-tint);
   color: var(--brand-primary);
-  padding: 1px 6px;
-  border-radius: var(--radius-sm);
+  padding: 2px 7px;
+  border-radius: var(--radius-full);
   font-weight: 600;
 }
 
@@ -189,11 +284,11 @@ button, input, select, textarea {
   .desktop-nav-links {
     display: flex;
     align-items: center;
-    gap: 4px;
+    gap: 3px;
     background-color: var(--bg-input);
     padding: 3px;
-    border-radius: var(--radius-lg);
-    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-full);
+    border: 0.5px solid var(--border-subtle);
   }
 }
 
@@ -201,16 +296,17 @@ button, input, select, textarea {
   background: transparent;
   border: none;
   padding: 6px 14px;
-  font-size: 0.875rem;
+  font-size: 0.85rem;
   font-weight: 500;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-full);
   cursor: pointer;
   color: var(--text-secondary);
-  transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all var(--transition-spring);
 }
 
 .desktop-nav-btn:hover {
   color: var(--text-primary);
+  background-color: rgba(255, 255, 255, 0.06);
 }
 
 .desktop-nav-btn:focus {
@@ -218,20 +314,20 @@ button, input, select, textarea {
 }
 
 .desktop-nav-btn:focus-visible {
-  outline: 2px solid var(--brand-primary);
-  outline-offset: -1px;
+  outline: 2.5px solid var(--brand-primary);
+  outline-offset: 1px;
 }
 
 .desktop-nav-btn.active {
   background-color: var(--bg-card);
   color: var(--brand-primary);
   font-weight: 600;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.22), inset 0 0.5px 0 var(--glass-highlight);
 }
 
 .theme-toggle-btn {
   background: var(--bg-input);
-  border: 1px solid var(--border-color);
+  border: 0.5px solid var(--border-color);
   width: 36px;
   height: 36px;
   border-radius: var(--radius-full);
@@ -240,11 +336,20 @@ button, input, select, textarea {
   justify-content: center;
   font-size: 1.05rem;
   cursor: pointer;
-  transition: transform 0.15s ease, background-color 0.15s ease;
+  transition: transform var(--transition-fast), background-color var(--transition-fast);
+}
+
+.theme-toggle-btn:hover {
+  background-color: var(--bg-card-hover);
 }
 
 .theme-toggle-btn:active {
   transform: scale(0.92);
+}
+
+.theme-toggle-btn:focus-visible {
+  outline: 2.5px solid var(--brand-primary);
+  outline-offset: 2px;
 }
 
 /* Main Content Area */
@@ -252,18 +357,24 @@ button, input, select, textarea {
   max-width: 1200px;
   width: 100%;
   margin: 0 auto;
-  padding: 16px;
+  padding: 16px 16px calc(110px + var(--safe-bottom)) 16px;
 }
 
-/* Cards & Surfaces */
+@media (min-width: 768px) {
+  .main-content {
+    padding: 24px;
+  }
+}
+
+
+/* Cards & Surfaces: Content First (Pure legibility, no translucent clutter) */
 .card {
   background-color: var(--bg-card);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-lg);
-  padding: 18px;
+  border: 0.5px solid var(--border-color);
+  border-radius: var(--radius-card);
+  padding: 20px;
   box-shadow: var(--shadow-sm);
-  backdrop-filter: blur(25px) saturate(180%);
-  -webkit-backdrop-filter: blur(25px) saturate(180%);
+  transition: border-color var(--transition-fast), background-color var(--transition-fast);
 }
 
 /* Typography & Helpers */
@@ -281,35 +392,40 @@ button, input, select, textarea {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 10px 18px;
-  font-size: 0.95rem;
+  padding: 9px 18px;
+  font-size: 0.9rem;
   font-weight: 600;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-full);
   cursor: pointer;
   border: none;
-  transition: all 0.15s ease;
+  transition: all var(--transition-spring);
 }
 
 .btn:active {
-  transform: scale(0.98);
+  transform: scale(0.96);
+}
+
+.btn:focus-visible {
+  outline: 2.5px solid var(--brand-primary);
+  outline-offset: 2px;
 }
 
 .btn-primary {
   background: var(--brand-gradient);
   color: #ffffff;
-  border: none;
-  box-shadow: 0 2px 10px rgba(255, 159, 10, 0.35);
+  border: 0.5px solid rgba(255, 255, 255, 0.25);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 4px 14px rgba(10, 132, 255, 0.35);
 }
 
 .btn-primary:hover {
-  filter: brightness(1.08);
-  box-shadow: 0 4px 14px rgba(255, 159, 10, 0.45);
+  filter: brightness(1.06);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45), 0 6px 18px rgba(10, 132, 255, 0.45);
 }
 
 .btn-secondary {
   background-color: var(--bg-input);
   color: var(--text-primary);
-  border: 1px solid var(--border-color);
+  border: 0.5px solid var(--border-color);
 }
 
 .btn-secondary:hover {
@@ -317,13 +433,13 @@ button, input, select, textarea {
 }
 
 .btn-danger {
-  background-color: rgba(239, 68, 68, 0.15);
-  color: #ef4444;
-  border: 1px solid rgba(239, 68, 68, 0.3);
+  background-color: rgba(255, 69, 58, 0.15);
+  color: var(--color-expense);
+  border: 0.5px solid rgba(255, 69, 58, 0.3);
 }
 
 .btn-danger:hover {
-  background-color: #ef4444;
+  background-color: var(--color-expense);
   color: #ffffff;
 }
 
@@ -332,9 +448,13 @@ button, input, select, textarea {
   color: var(--text-secondary);
 }
 
+.btn-ghost:hover {
+  color: var(--text-primary);
+}
+
 .btn-sm {
-  padding: 6px 12px;
-  font-size: 0.85rem;
+  padding: 6px 14px;
+  font-size: 0.825rem;
 }
 
 .btn-icon {
@@ -342,9 +462,10 @@ button, input, select, textarea {
   border: none;
   font-size: 1.1rem;
   padding: 6px;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-full);
   cursor: pointer;
   color: var(--text-secondary);
+  transition: all var(--transition-fast);
 }
 
 .btn-icon:hover {
@@ -368,40 +489,48 @@ button, input, select, textarea {
   display: flex;
   background-color: var(--bg-input);
   padding: 3px;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border-subtle);
-  gap: 3px;
+  border-radius: var(--radius-full);
+  border: 0.5px solid var(--border-subtle);
+  gap: 2px;
 }
 
 .segmented-btn {
   flex: 1;
-  padding: 7px 12px;
+  padding: 6px 14px;
   border: none;
-  border-radius: calc(var(--radius-md) - 2px);
+  border-radius: var(--radius-full);
   background: transparent;
   color: var(--text-secondary);
   font-weight: 500;
-  font-size: 0.875rem;
+  font-size: 0.85rem;
   cursor: pointer;
-  transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all var(--transition-spring);
+  white-space: nowrap;
 }
 
 .segmented-btn:hover {
   color: var(--text-primary);
 }
 
+.segmented-btn.active {
+  background-color: var(--bg-card);
+  color: var(--brand-primary);
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18), inset 0 0.5px 0 var(--glass-highlight);
+}
+
 .segmented-btn.active-expense {
   background-color: var(--color-expense);
   color: #ffffff;
   font-weight: 600;
-  box-shadow: 0 2px 6px rgba(255, 69, 58, 0.3);
+  box-shadow: 0 2px 8px rgba(255, 69, 58, 0.35);
 }
 
 .segmented-btn.active-income {
   background-color: var(--color-income);
   color: #ffffff;
   font-weight: 600;
-  box-shadow: 0 2px 6px rgba(48, 209, 88, 0.3);
+  box-shadow: 0 2px 8px rgba(48, 209, 88, 0.35);
 }
 
 .segmented-btn.active-need {
@@ -865,26 +994,31 @@ button, input, select, textarea {
   border-radius: var(--radius-full);
 }
 
-/* Floating Action Button (FAB) */
+/* Floating Action Button (FAB): iOS 27 Liquid Capsule */
 .fab-add-btn {
   position: fixed;
-  bottom: calc(80px + var(--safe-bottom));
+  bottom: calc(88px + var(--safe-bottom));
   right: 20px;
   width: 56px;
   height: 56px;
-  border-radius: 18px;
+  border-radius: var(--radius-full);
   background: var(--brand-gradient);
   color: #ffffff;
-  border: none;
+  border: 0.5px solid rgba(255, 255, 255, 0.28);
   font-size: 2rem;
   font-weight: 300;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 8px 24px rgba(255, 159, 10, 0.45);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 8px 28px rgba(10, 132, 255, 0.42);
   cursor: pointer;
   z-index: 30;
-  transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.15s ease;
+  transition: transform var(--transition-spring), box-shadow var(--transition-spring);
+}
+
+.fab-add-btn:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), 0 12px 32px rgba(10, 132, 255, 0.52);
 }
 
 .fab-add-btn:active {
@@ -1468,18 +1602,23 @@ button, input, select, textarea {
   gap: 8px;
 }
 
-/* Tab Bar Navigation */
+/* Tab Bar Navigation: iOS 27 Floating Liquid Glass Dock */
 .tab-bar-container {
   position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background-color: var(--bg-surface);
-  backdrop-filter: blur(25px) saturate(190%);
-  -webkit-backdrop-filter: blur(25px) saturate(190%);
-  border-top: 1px solid var(--border-color);
+  bottom: calc(14px + var(--safe-bottom));
+  left: 16px;
+  right: 16px;
+  max-width: 440px;
+  margin: 0 auto;
+  background-color: var(--glass-fill);
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  border: 0.5px solid var(--glass-border);
+  box-shadow: inset 0 0.5px 0 var(--glass-highlight), 0 12px 36px rgba(0, 0, 0, 0.35);
+  border-radius: var(--radius-full);
   z-index: 50;
-  padding-bottom: var(--safe-bottom);
+  padding: 5px 8px;
+  transition: all var(--transition-spring);
 }
 
 @media (min-width: 768px) {
@@ -1492,7 +1631,8 @@ button, input, select, textarea {
   display: flex;
   align-items: center;
   justify-content: space-around;
-  height: 60px;
+  height: 52px;
+  gap: 4px;
 }
 
 .tab-btn {
@@ -1504,13 +1644,21 @@ button, input, select, textarea {
   border: none;
   flex: 1;
   height: 100%;
+  border-radius: var(--radius-full);
   color: var(--text-muted);
   cursor: pointer;
-  transition: color 0.15s ease, transform 0.15s ease;
+  transition: all var(--transition-spring);
+  padding: 4px 6px;
+}
+
+.tab-btn:hover {
+  color: var(--text-secondary);
 }
 
 .tab-btn.active {
+  background-color: var(--brand-primary-tint);
   color: var(--brand-primary);
+  font-weight: 600;
 }
 
 .tab-btn:active {
@@ -1518,28 +1666,28 @@ button, input, select, textarea {
 }
 
 .tab-icon {
-  font-size: 1.25rem;
+  font-size: 1.2rem;
   line-height: 1;
 }
 
 .tab-label {
-  font-size: 0.7rem;
+  font-size: 0.68rem;
   font-weight: 600;
   margin-top: 2px;
 }
 
-/* Modal Dialog */
+/* Modal Dialog & Bottom Sheet */
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.62);
   display: flex;
   align-items: flex-end;
   justify-content: center;
   z-index: 100;
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  animation: fadeIn 0.15s ease-out;
+  backdrop-filter: blur(24px) saturate(140%);
+  -webkit-backdrop-filter: blur(24px) saturate(140%);
+  animation: fadeIn 0.18s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @media (min-width: 600px) {
@@ -1550,24 +1698,42 @@ button, input, select, textarea {
 }
 
 .modal-card {
-  background-color: var(--bg-card);
-  backdrop-filter: blur(30px) saturate(200%);
-  -webkit-backdrop-filter: blur(30px) saturate(200%);
-  border: 1px solid var(--border-color);
+  background-color: var(--sheet-fill);
+  backdrop-filter: blur(36px) saturate(160%);
+  -webkit-backdrop-filter: blur(36px) saturate(160%);
+  border: 0.5px solid var(--glass-border);
+  box-shadow: inset 0 0.5px 0 var(--glass-highlight), 0 24px 64px rgba(0, 0, 0, 0.55);
   width: 100%;
   max-width: 520px;
   max-height: 90vh;
   overflow-y: auto;
-  border-top-left-radius: var(--radius-xl);
-  border-top-right-radius: var(--radius-xl);
-  padding: 24px;
-  box-shadow: var(--shadow-lg);
-  animation: slideUp 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  border-top-left-radius: var(--radius-sheet);
+  border-top-right-radius: var(--radius-sheet);
+  padding: 20px 24px 28px 24px;
+  animation: slideUp 0.24s cubic-bezier(0.16, 1, 0.3, 1);
 }
+
 
 @media (min-width: 600px) {
   .modal-card {
-    border-radius: var(--radius-xl);
+    border-radius: var(--radius-sheet);
+  }
+}
+
+/* Sheet Detent Grabber (iOS 27 Handle) */
+.sheet-grabber {
+  width: 38px;
+  height: 5px;
+  background-color: var(--text-muted);
+  opacity: 0.35;
+  border-radius: var(--radius-full);
+  margin: 0 auto 14px auto;
+  transition: opacity var(--transition-fast);
+}
+
+@media (min-width: 600px) {
+  .sheet-grabber {
+    display: none;
   }
 }
 
@@ -1581,14 +1747,27 @@ button, input, select, textarea {
 .modal-title {
   font-size: 1.2rem;
   font-weight: 700;
+  letter-spacing: -0.02em;
 }
 
 .modal-close-btn {
-  background: transparent;
-  border: none;
-  font-size: 1.25rem;
+  background: var(--bg-input);
+  border: 0.5px solid var(--border-color);
+  width: 30px;
+  height: 30px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
   color: var(--text-muted);
   cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.modal-close-btn:hover {
+  color: var(--text-primary);
+  background-color: var(--bg-card-hover);
 }
 
 /* Toast */
