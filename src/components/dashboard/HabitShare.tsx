@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import { HabitWeekItem } from '../../domain/analytics';
 import { EChartWrapper } from '../common/EChartWrapper';
+import { formatINR, getCurrencySymbol, getActiveCurrency } from '../../domain/money';
 
 export interface HabitShareProps {
   weeks: HabitWeekItem[];
@@ -12,6 +13,7 @@ export const HabitShare: React.FC<HabitShareProps> = ({ weeks }) => {
     const needData = weeks.map((w) => w.needCents / 100);
     const wantData = weeks.map((w) => w.wantCents / 100);
     const impulseData = weeks.map((w) => w.impulseCents / 100);
+    const currencySym = getCurrencySymbol(getActiveCurrency());
 
     return {
       tooltip: {
@@ -24,10 +26,10 @@ export const HabitShare: React.FC<HabitShareProps> = ({ weeks }) => {
           if (!week) return '';
 
           return `<div style="font-weight:600;margin-bottom:4px;">${week.weekKey}</div>
-            <div style="color:#10b981;">🌱 Need: ₹${(week.needCents / 100).toLocaleString('en-IN', { minimumFractionDigits: 2 })} (${week.needSharePercent}%)</div>
-            <div style="color:#f59e0b;">☕ Want: ₹${(week.wantCents / 100).toLocaleString('en-IN', { minimumFractionDigits: 2 })} (${week.wantSharePercent}%)</div>
-            <div style="color:#8b5cf6;">⚡ Impulse: ₹${(week.impulseCents / 100).toLocaleString('en-IN', { minimumFractionDigits: 2 })} (${week.impulseSharePercent}%)</div>
-            <div style="border-top:1px solid #475569;margin-top:4px;padding-top:4px;font-weight:bold;">Total: ₹${(week.totalCents / 100).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</div>`;
+            <div style="color:#10b981;">🌱 Need: ${formatINR(week.needCents)} (${week.needSharePercent}%)</div>
+            <div style="color:#f59e0b;">☕ Want: ${formatINR(week.wantCents)} (${week.wantSharePercent}%)</div>
+            <div style="color:#8b5cf6;">⚡ Impulse: ${formatINR(week.impulseCents)} (${week.impulseSharePercent}%)</div>
+            <div style="border-top:1px solid #475569;margin-top:4px;padding-top:4px;font-weight:bold;">Total: ${formatINR(week.totalCents)}</div>`;
         },
       },
       legend: {
@@ -50,7 +52,7 @@ export const HabitShare: React.FC<HabitShareProps> = ({ weeks }) => {
       yAxis: {
         type: 'value',
         axisLabel: {
-          formatter: (val: number) => `₹${val >= 1000 ? `${(val / 1000).toFixed(0)}k` : val}`,
+          formatter: (val: number) => `${currencySym}${val >= 1000 ? `${(val / 1000).toFixed(0)}k` : val}`,
         },
         splitLine: {
           lineStyle: { color: 'rgba(100, 116, 139, 0.15)' },

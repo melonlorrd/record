@@ -15,10 +15,10 @@ export const SmallPurchases: React.FC<SmallPurchasesProps> = ({ entries }) => {
   const summary = calculateSmallPurchases(entries, thresholdCents);
 
   const presetThresholds = [
-    { label: '₹100', cents: 10000 },
-    { label: '₹250', cents: 25000 },
-    { label: '₹500', cents: 50000 },
-    { label: '₹1,000', cents: 100000 },
+    { label: formatINR(10000, { compactIfZeroPaise: true }), cents: 10000 },
+    { label: formatINR(25000, { compactIfZeroPaise: true }), cents: 25000 },
+    { label: formatINR(50000, { compactIfZeroPaise: true }), cents: 50000 },
+    { label: formatINR(100000, { compactIfZeroPaise: true }), cents: 100000 },
   ];
 
   return (

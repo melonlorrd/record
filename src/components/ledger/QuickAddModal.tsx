@@ -11,7 +11,7 @@ export interface QuickAddModalProps {
 }
 
 export const QuickAddModal: React.FC<QuickAddModalProps> = ({ isOpen, onClose }) => {
-  const { activeCategories, addEntry, showToast } = useStore();
+  const { activeCategories, addEntry, showToast, currencySymbol } = useStore();
 
   const [kind, setKind] = useState<EntryKind>('expense');
   const [amountInput, setAmountInput] = useState('');
@@ -123,7 +123,7 @@ export const QuickAddModal: React.FC<QuickAddModalProps> = ({ isOpen, onClose })
 
         {/* Amount Input (First & Primary focus) */}
         <div className="amount-input-group">
-          <span className="currency-prefix">₹</span>
+          <span className="currency-prefix">{currencySymbol}</span>
           <input
             ref={amountRef}
             type="text"
@@ -233,7 +233,7 @@ export const QuickAddModal: React.FC<QuickAddModalProps> = ({ isOpen, onClose })
             Cancel
           </button>
           <button type="submit" className="btn btn-primary btn-save">
-            Save Transaction (₹)
+            Save Transaction ({currencySymbol})
           </button>
         </div>
       </form>

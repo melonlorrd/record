@@ -10,7 +10,7 @@ export interface EditEntryModalProps {
 }
 
 export const EditEntryModal: React.FC<EditEntryModalProps> = ({ entry, onClose }) => {
-  const { activeCategories, updateEntry, softDeleteEntry, showToast } = useStore();
+  const { activeCategories, updateEntry, softDeleteEntry, showToast, currencySymbol } = useStore();
 
   const [kind, setKind] = useState<EntryKind>('expense');
   const [amountInput, setAmountInput] = useState('');
@@ -100,7 +100,7 @@ export const EditEntryModal: React.FC<EditEntryModalProps> = ({ entry, onClose }
         </div>
 
         <div className="amount-input-group">
-          <span className="currency-prefix">₹</span>
+          <span className="currency-prefix">{currencySymbol}</span>
           <input
             type="text"
             inputMode="decimal"

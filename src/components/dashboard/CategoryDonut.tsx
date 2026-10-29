@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { CategoryBreakdownItem } from '../../domain/analytics';
-import { formatINR } from '../../domain/money';
+import { formatINR, getCurrencySymbol, getActiveCurrency } from '../../domain/money';
 import { EChartWrapper } from '../common/EChartWrapper';
 
 export interface CategoryDonutProps {
@@ -8,6 +8,8 @@ export interface CategoryDonutProps {
 }
 
 export const CategoryDonut: React.FC<CategoryDonutProps> = ({ breakdown }) => {
+  const currencySym = getCurrencySymbol(getActiveCurrency());
+
   const options = useMemo(() => {
     const data = breakdown.map((item) => ({
       name: item.name,
@@ -22,7 +24,7 @@ export const CategoryDonut: React.FC<CategoryDonutProps> = ({ breakdown }) => {
           const val = params.value as number;
           const pct = params.percent;
           return `<div style="font-weight:600;margin-bottom:2px;">${params.name}</div>
-            <div>₹${val.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (${pct}%)</div>`;
+            <div>${formatINR(Math.round(val * 100))} (${pct}%)</div>`;
         },
       },
       legend: {
@@ -82,7 +84,7 @@ export const CategoryDonut: React.FC<CategoryDonutProps> = ({ breakdown }) => {
             <thead>
               <tr>
                 <th>Category</th>
-                <th className="text-right">Spent (₹)</th>
+                <th className="text-right">Spent ({currencySym})</th>
                 <th className="text-right">Share</th>
               </tr>
             </thead>

@@ -6,7 +6,7 @@ import { formatINR } from '../../domain/money';
 import { AddHoldingModal } from './AddHoldingModal';
 
 export const PortfolioView: React.FC = () => {
-  const { holdings, entries } = useStore();
+  const { holdings, entries, currencySymbol } = useStore();
 
   const [filterClass, setFilterClass] = useState<AssetClass | 'ALL'>('ALL');
   const [isAddOpen, setIsAddOpen] = useState(false);
@@ -272,9 +272,9 @@ export const PortfolioView: React.FC = () => {
                         )}
                         <span>{h.units} units</span>
                         <span className="entry-dot-separator">•</span>
-                        <span>Avg ₹{(h.buyAvgPriceCents / 100).toFixed(2)}</span>
+                        <span>Avg {currencySymbol}{(h.buyAvgPriceCents / 100).toFixed(2)}</span>
                         <span className="entry-dot-separator">•</span>
-                        <span>Current ₹{(h.currentNavOrPriceCents / 100).toFixed(2)}</span>
+                        <span>Current {currencySymbol}{(h.currentNavOrPriceCents / 100).toFixed(2)}</span>
                       </div>
                     </div>
                   </div>
@@ -311,8 +311,8 @@ export const PortfolioView: React.FC = () => {
                   <th>Asset</th>
                   <th>Class</th>
                   <th className="text-right">Quantity</th>
-                  <th className="text-right">Avg Buy (₹)</th>
-                  <th className="text-right">Current (₹)</th>
+                  <th className="text-right">Avg Buy ({currencySymbol})</th>
+                  <th className="text-right">Current ({currencySymbol})</th>
                   <th className="text-right">Invested</th>
                   <th className="text-right">Current Value</th>
                   <th className="text-right">Gain / Loss</th>
@@ -341,8 +341,8 @@ export const PortfolioView: React.FC = () => {
                         </span>
                       </td>
                       <td className="text-right font-medium tabular-nums">{h.units}</td>
-                      <td className="text-right text-muted tabular-nums">₹{(h.buyAvgPriceCents / 100).toFixed(2)}</td>
-                      <td className="text-right font-medium tabular-nums">₹{(h.currentNavOrPriceCents / 100).toFixed(2)}</td>
+                      <td className="text-right text-muted tabular-nums">{currencySymbol}{(h.buyAvgPriceCents / 100).toFixed(2)}</td>
+                      <td className="text-right font-medium tabular-nums">{currencySymbol}{(h.currentNavOrPriceCents / 100).toFixed(2)}</td>
                       <td className="text-right text-muted tabular-nums">{formatINR(h.investedCents)}</td>
                       <td className="text-right font-semibold tabular-nums">{formatINR(h.currentValueCents)}</td>
                       <td className={`text-right font-semibold tabular-nums ${isProfit ? 'income-text' : 'expense-text'}`}>

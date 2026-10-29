@@ -30,6 +30,7 @@ import {
 } from '../storage/db';
 import { generateSampleData } from '../domain/seed';
 import { getDefaultTimezone } from '../domain/dates';
+import { getCurrencySymbol, setActiveCurrency } from '../domain/money';
 
 function getOrCreateDeviceId(): string {
   const KEY = 'kosh_device_id';
@@ -65,8 +66,6 @@ export interface ToastState {
   durationMs?: number;
 }
 
-export type GlassIntensity = 'clear' | 'refined' | 'tinted';
-
 export interface StoreContextValue {
   isLoaded: boolean;
   isPersistedStorage: boolean;
@@ -75,11 +74,12 @@ export interface StoreContextValue {
   categories: Category[];
   activeCategories: Category[];
   holdings: PortfolioHolding[];
+  currency: string;
+  currencySymbol: string;
   theme: 'dark' | 'light';
-  glassIntensity: GlassIntensity;
   toast: ToastState | null;
   toggleTheme: () => void;
-  setGlassIntensity: (intensity: GlassIntensity) => void;
+  convertAllDataCurrency: (targetCurrency: string, exchangeRate: number) => Promise<void>;
   showToast: (toast: Omit<ToastState, 'id'>) => void;
   hideToast: () => void;
   addEntry: (input: CreateEntryInput) => Promise<string>;
@@ -118,35 +118,17 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     return 'dark';
   });
 
-  const [glassIntensity, setGlassIntensityState] = useState<GlassIntensity>(() => {
-    try {
-      const saved = localStorage.getItem('record_glass_intensity');
-      if (saved === 'clear' || saved === 'refined' || saved === 'tinted') return saved;
-    } catch {}
-    return 'refined';
-  });
-
-  // Apply theme and glass attributes to document
+  // Apply theme and clear glass attributes to document
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
+    document.documentElement.setAttribute('data-glass', 'clear');
     try {
       localStorage.setItem('kosh_theme', theme);
     } catch {}
   }, [theme]);
 
-  useEffect(() => {
-    document.documentElement.setAttribute('data-glass', glassIntensity);
-    try {
-      localStorage.setItem('record_glass_intensity', glassIntensity);
-    } catch {}
-  }, [glassIntensity]);
-
   const toggleTheme = useCallback(() => {
     setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
-  }, []);
-
-  const setGlassIntensity = useCallback((intensity: GlassIntensity) => {
-    setGlassIntensityState(intensity);
   }, []);
 
   const hideToast = useCallback(() => {
@@ -167,6 +149,13 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     return () => clearTimeout(timer);
   }, [toast]);
 
+  const currency = data.currency || 'INR';
+  const currencySymbol = useMemo(() => getCurrencySymbol(currency), [currency]);
+
+  useEffect(() => {
+    setActiveCurrency(currency);
+  }, [currency]);
+
   // Load from storage on mount
   useEffect(() => {
     async function init() {
@@ -185,8 +174,10 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         const seed = generateSampleData(Date.now(), getDefaultTimezone(), 42);
         await saveAppDataToStorage(seed);
         setData(seed);
+        setActiveCurrency(seed.currency || 'INR');
       } else {
         setData(loaded.data);
+        setActiveCurrency(loaded.data.currency || 'INR');
       }
 
       setIsLoaded(true);
@@ -516,6 +507,43 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     return data.categories.filter((c) => !c.deleted && !c.archived);
   }, [data.categories]);
 
+  // Convert all data in database to target currency using exchange rate
+  const convertAllDataCurrency = useCallback(
+    async (targetCurrency: string, exchangeRate: number): Promise<void> => {
+      const target = targetCurrency.toUpperCase().trim();
+      const now = Date.now();
+
+      const convertedEntries = data.entries.map((e) => ({
+        ...e,
+        amountCents: Math.max(1, Math.round(e.amountCents * exchangeRate)),
+        updatedAt: now,
+      }));
+
+      const convertedHoldings = (data.holdings || []).map((h) => ({
+        ...h,
+        buyAvgPriceCents: Math.max(1, Math.round(h.buyAvgPriceCents * exchangeRate)),
+        currentNavOrPriceCents: Math.max(1, Math.round(h.currentNavOrPriceCents * exchangeRate)),
+        updatedAt: now,
+      }));
+
+      const nextData: AppData = {
+        ...data,
+        currency: target,
+        entries: convertedEntries,
+        holdings: convertedHoldings,
+        lastModified: now,
+      };
+
+      setActiveCurrency(target);
+      await commitData(nextData);
+
+      showToast({
+        message: `Converted all transactions & holdings to ${target} (${getCurrencySymbol(target)}) at rate ${exchangeRate.toFixed(4)}.`,
+      });
+    },
+    [data, commitData, showToast]
+  );
+
   const value: StoreContextValue = {
     isLoaded,
     isPersistedStorage,
@@ -524,11 +552,12 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     categories: data.categories,
     activeCategories,
     holdings: data.holdings || [],
+    currency,
+    currencySymbol,
     theme,
-    glassIntensity,
     toast,
     toggleTheme,
-    setGlassIntensity,
+    convertAllDataCurrency,
     showToast,
     hideToast,
     addEntry,

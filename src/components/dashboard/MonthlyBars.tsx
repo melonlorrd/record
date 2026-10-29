@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import { MonthlyBarItem } from '../../domain/analytics';
 import { EChartWrapper } from '../common/EChartWrapper';
+import { formatINR, getCurrencySymbol, getActiveCurrency } from '../../domain/money';
 
 export interface MonthlyBarsProps {
   monthlyData: MonthlyBarItem[];
@@ -11,6 +12,7 @@ export const MonthlyBars: React.FC<MonthlyBarsProps> = ({ monthlyData }) => {
     const labels = monthlyData.map((d) => d.label);
     const incomeValues = monthlyData.map((d) => d.incomeCents / 100);
     const expenseValues = monthlyData.map((d) => d.expenseCents / 100);
+    const currencySym = getCurrencySymbol(getActiveCurrency());
 
     return {
       tooltip: {
@@ -24,7 +26,7 @@ export const MonthlyBars: React.FC<MonthlyBarsProps> = ({ monthlyData }) => {
             const val = item.value as number;
             tip += `<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
               <span>${item.marker} ${item.seriesName}:</span>
-              <span style="font-weight:600;">₹${val.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
+              <span style="font-weight:600;">${formatINR(Math.round(val * 100))}</span>
             </div>`;
           }
           return tip;
@@ -49,7 +51,7 @@ export const MonthlyBars: React.FC<MonthlyBarsProps> = ({ monthlyData }) => {
       yAxis: {
         type: 'value',
         axisLabel: {
-          formatter: (val: number) => `₹${val >= 1000 ? `${(val / 1000).toFixed(0)}k` : val}`,
+          formatter: (val: number) => `${currencySym}${val >= 1000 ? `${(val / 1000).toFixed(0)}k` : val}`,
         },
         splitLine: {
           lineStyle: { color: 'rgba(100, 116, 139, 0.15)' },

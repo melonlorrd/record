@@ -15,7 +15,7 @@ export const AddHoldingModal: React.FC<AddHoldingModalProps> = ({
   editingHolding,
   onClose,
 }) => {
-  const { addHolding, updateHolding, softDeleteHolding, showToast } = useStore();
+  const { addHolding, updateHolding, softDeleteHolding, showToast, currencySymbol } = useStore();
 
   const [assetClass, setAssetClass] = useState<AssetClass>('mutual_fund');
   const [name, setName] = useState('');
@@ -216,7 +216,7 @@ export const AddHoldingModal: React.FC<AddHoldingModalProps> = ({
           </div>
 
           <div className="form-section">
-            <label className="form-label">Average Buy Price (₹)</label>
+            <label className="form-label">Average Buy Price ({currencySymbol})</label>
             <input
               type="text"
               inputMode="decimal"
@@ -231,7 +231,7 @@ export const AddHoldingModal: React.FC<AddHoldingModalProps> = ({
 
         {/* Current NAV / Market Price */}
         <div className="form-section">
-          <label className="form-label">Current NAV / Market Price (₹)</label>
+          <label className="form-label">Current NAV / Market Price ({currencySymbol})</label>
           <input
             type="text"
             inputMode="decimal"

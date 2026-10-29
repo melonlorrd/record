@@ -1,15 +1,20 @@
 import React, { useRef, useState } from 'react';
 import { useStore } from '../../store/storeContext';
 import { syncEngine } from '../../storage/syncPlaceholder';
+import { SUPPORTED_CURRENCIES } from '../../domain/money';
+import { fetchLiveExchangeRate } from '../../services/currencyApi';
+import { CurrencyConversionModal } from './CurrencyConversionModal';
 
 export const SettingsView: React.FC = () => {
   const {
     entries,
     categories,
+    holdings,
+    currency,
+    currencySymbol,
     theme,
-    glassIntensity,
     toggleTheme,
-    setGlassIntensity,
+    convertAllDataCurrency,
     isPersistedStorage,
     exportJSON,
     importJSON,
@@ -20,6 +25,13 @@ export const SettingsView: React.FC = () => {
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [importStatus, setImportStatus] = useState<string | null>(null);
+  const [isFetchingRate, setIsFetchingRate] = useState(false);
+  const [pendingConversion, setPendingConversion] = useState<{
+    targetCurrency: string;
+    rate: number;
+    provider?: string | undefined;
+    lastUpdated?: string | undefined;
+  } | null>(null);
 
   const activeCount = entries.filter((e) => !e.deleted).length;
   const deletedCount = entries.filter((e) => e.deleted).length;
@@ -57,6 +69,28 @@ export const SettingsView: React.FC = () => {
     }
   };
 
+  const handleCurrencySelectChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const target = e.target.value;
+    if (target === currency) return;
+
+    try {
+      setIsFetchingRate(true);
+      const res = await fetchLiveExchangeRate(currency, target);
+      setPendingConversion({
+        targetCurrency: target,
+        rate: res.rate,
+        provider: res.provider,
+        lastUpdated: res.lastUpdated,
+      });
+    } catch (err) {
+      showToast({
+        message: err instanceof Error ? err.message : 'Failed to fetch live exchange rate',
+      });
+    } finally {
+      setIsFetchingRate(false);
+    }
+  };
+
   const syncStatus = syncEngine.getStatus();
 
   return (
@@ -82,36 +116,37 @@ export const SettingsView: React.FC = () => {
             {theme === 'dark' ? '☀️ Switch to Light' : '🌙 Switch to Dark'}
           </button>
         </div>
+      </div>
 
-        <div className="settings-row" style={{ marginTop: '16px', paddingTop: '16px', borderTop: '1px solid var(--border-subtle)' }}>
+      {/* Base Currency & Live Conversion */}
+      <div className="settings-section card">
+        <h3 className="section-subtitle">Currency & Database Conversion</h3>
+        <div className="settings-row">
           <div>
-            <div className="setting-title">Liquid Glass Material</div>
+            <div className="setting-title">Base Vault Currency</div>
             <div className="setting-description text-muted">
-              Adjust diffusion, translucency, and refraction across toolbars and navigation.
+              Current currency: <b>{currency} ({currencySymbol})</b>. Switching currencies fetches live market exchange rates and prompts you to recalculate all transactions and portfolio holdings in your database.
             </div>
           </div>
-          <div className="segmented-control" role="group" aria-label="Liquid Glass Material">
-            <button
-              type="button"
-              className={`segmented-btn ${glassIntensity === 'clear' ? 'active' : ''}`}
-              onClick={() => setGlassIntensity('clear')}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            {isFetchingRate && (
+              <span className="small-text text-muted" style={{ animation: 'pulse 1s infinite' }}>
+                Fetching rate...
+              </span>
+            )}
+            <select
+              className="form-select currency-selector-dropdown"
+              value={currency}
+              onChange={handleCurrencySelectChange}
+              disabled={isFetchingRate}
+              aria-label="Select Base Currency"
             >
-              Clear
-            </button>
-            <button
-              type="button"
-              className={`segmented-btn ${glassIntensity === 'refined' ? 'active' : ''}`}
-              onClick={() => setGlassIntensity('refined')}
-            >
-              Refined
-            </button>
-            <button
-              type="button"
-              className={`segmented-btn ${glassIntensity === 'tinted' ? 'active' : ''}`}
-              onClick={() => setGlassIntensity('tinted')}
-            >
-              Tinted
-            </button>
+              {SUPPORTED_CURRENCIES.map((c) => (
+                <option key={c.code} value={c.code}>
+                  {c.code} ({c.symbol}) — {c.name}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
       </div>
@@ -213,6 +248,24 @@ export const SettingsView: React.FC = () => {
           <span>Pending sync items: <b>{syncStatus.pendingChangesCount}</b></span>
         </div>
       </div>
+
+      {pendingConversion && (
+        <CurrencyConversionModal
+          isOpen={!!pendingConversion}
+          onClose={() => setPendingConversion(null)}
+          fromCurrency={currency}
+          toCurrency={pendingConversion.targetCurrency}
+          initialRate={pendingConversion.rate}
+          provider={pendingConversion.provider}
+          lastUpdated={pendingConversion.lastUpdated}
+          transactionCount={entries.filter((e) => !e.deleted).length}
+          holdingCount={(holdings || []).filter((h) => !h.deleted).length}
+          onConfirm={async (targetCurrency, rate) => {
+            await convertAllDataCurrency(targetCurrency, rate);
+            setPendingConversion(null);
+          }}
+        />
+      )}
     </div>
   );
 };

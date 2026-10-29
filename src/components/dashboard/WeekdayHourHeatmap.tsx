@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import { HeatmapCell } from '../../domain/analytics';
 import { EChartWrapper } from '../common/EChartWrapper';
+import { formatINR, getCurrencySymbol, getActiveCurrency } from '../../domain/money';
 
 export interface WeekdayHourHeatmapProps {
   cells: HeatmapCell[];
@@ -10,6 +11,7 @@ export const WeekdayHourHeatmap: React.FC<WeekdayHourHeatmapProps> = ({ cells })
   const options = useMemo(() => {
     const hours = Array.from({ length: 24 }, (_, i) => `${i}h`);
     const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const currencySym = getCurrencySymbol(getActiveCurrency());
 
     // ECharts heatmap expects data in [xIndex, yIndex, value] format: [hour, weekday, rupees]
     const data: [number, number, number][] = cells.map((cell) => [
@@ -31,7 +33,7 @@ export const WeekdayHourHeatmap: React.FC<WeekdayHourHeatmapProps> = ({ cells })
           const timeStr = `${hourIdx}:00 - ${hourIdx}:59`;
 
           return `<div style="font-weight:600;margin-bottom:2px;">${dayName}, ${timeStr}</div>
-            <div>Total Spend: <b>₹${rupees.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</b></div>
+            <div>Total Spend: <b>${formatINR(Math.round(rupees * 100))}</b></div>
             <div style="font-size:12px;color:#94a3b8;">${count} transaction${count === 1 ? '' : 's'}</div>`;
         },
       },
@@ -67,7 +69,7 @@ export const WeekdayHourHeatmap: React.FC<WeekdayHourHeatmapProps> = ({ cells })
           color: ['rgba(48, 54, 61, 0.3)', '#58a6ff', '#d29922', '#f85149'],
         },
         textStyle: { color: 'inherit', fontSize: 10 },
-        formatter: (val: number) => `₹${val >= 1000 ? `${(val / 1000).toFixed(0)}k` : Math.round(val)}`,
+        formatter: (val: number) => `${currencySym}${val >= 1000 ? `${(val / 1000).toFixed(0)}k` : Math.round(val)}`,
       },
       series: [
         {

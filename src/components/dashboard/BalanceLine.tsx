@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { BalancePoint } from '../../domain/analytics';
 import { formatDateLabel } from '../../domain/dates';
-import { formatINR } from '../../domain/money';
+import { formatINR, getCurrencySymbol, getActiveCurrency } from '../../domain/money';
 import { EChartWrapper } from '../common/EChartWrapper';
 
 export interface BalanceLineProps {
@@ -12,6 +12,7 @@ export const BalanceLine: React.FC<BalanceLineProps> = ({ balancePoints }) => {
   const options = useMemo(() => {
     const dates = balancePoints.map((p) => formatDateLabel(p.epochMs, p.tz));
     const values = balancePoints.map((p) => p.balanceCents / 100);
+    const currencySym = getCurrencySymbol(getActiveCurrency());
 
     return {
       tooltip: {
@@ -46,7 +47,7 @@ export const BalanceLine: React.FC<BalanceLineProps> = ({ balancePoints }) => {
       yAxis: {
         type: 'value',
         axisLabel: {
-          formatter: (val: number) => `₹${val >= 1000 ? `${(val / 1000).toFixed(0)}k` : val}`,
+          formatter: (val: number) => `${currencySym}${val >= 1000 ? `${(val / 1000).toFixed(0)}k` : val}`,
         },
         splitLine: {
           lineStyle: { color: 'rgba(100, 116, 139, 0.15)' },

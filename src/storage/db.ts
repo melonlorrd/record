@@ -27,6 +27,7 @@ export function createInitialEmptyData(): AppData {
     entries: [],
     categories: [...SEED_CATEGORIES],
     holdings: [],
+    currency: 'INR',
     lastModified: Date.now(),
   };
 }

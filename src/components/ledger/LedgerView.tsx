@@ -8,7 +8,7 @@ import { QuickAddModal } from './QuickAddModal';
 import { EditEntryModal } from './EditEntryModal';
 
 export const LedgerView: React.FC = () => {
-  const { entries, categories, softDeleteEntry } = useStore();
+  const { entries, categories, softDeleteEntry, currencySymbol } = useStore();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedMonth, setSelectedMonth] = useState('ALL');
@@ -291,7 +291,7 @@ export const LedgerView: React.FC = () => {
                         <th>Category</th>
                         <th>Note</th>
                         <th>Intent</th>
-                        <th className="text-right">Amount (₹)</th>
+                        <th className="text-right">Amount ({currencySymbol})</th>
                         <th className="text-right">Actions</th>
                       </tr>
                     </thead>

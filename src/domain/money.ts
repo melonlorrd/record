@@ -1,49 +1,107 @@
 /**
- * Money utilities for INR currency representation.
+ * Multi-Currency & Money Utilities.
  *
- * Go vs TypeScript note:
- * Floating-point numbers (IEEE 754 float64 in JS, float64 in Go) introduce rounding errors
- * (e.g. 0.1 + 0.2 = 0.30000000000000004).
- * We store all amounts as positive integer cents/paise (1 Rupee = 100 paise).
+ * Architecture rules:
+ * - We store all amounts as positive integer cents (1 Major Unit = 100 Minor Units / Cents / Paise).
+ * - Floating point arithmetic is forbidden for currency calculations.
+ * - Dynamic currency formatting supports INR (₹ default), USD ($), EUR (€), GBP (£), and others.
  */
 
-const inrFormatter = new Intl.NumberFormat('en-IN', {
-  style: 'currency',
-  currency: 'INR',
-  minimumFractionDigits: 2,
-  maximumFractionDigits: 2,
-});
+export interface CurrencyInfo {
+  code: string;
+  symbol: string;
+  name: string;
+  locale: string;
+  fractionDigits: number;
+}
 
-const inrFormatterCompact = new Intl.NumberFormat('en-IN', {
-  style: 'currency',
-  currency: 'INR',
-  minimumFractionDigits: 0,
-  maximumFractionDigits: 0,
-});
+export const SUPPORTED_CURRENCIES: CurrencyInfo[] = [
+  { code: 'INR', symbol: '₹', name: 'Indian Rupee', locale: 'en-IN', fractionDigits: 2 },
+  { code: 'USD', symbol: '$', name: 'US Dollar', locale: 'en-US', fractionDigits: 2 },
+  { code: 'EUR', symbol: '€', name: 'Euro', locale: 'de-DE', fractionDigits: 2 },
+  { code: 'GBP', symbol: '£', name: 'British Pound', locale: 'en-GB', fractionDigits: 2 },
+  { code: 'JPY', symbol: '¥', name: 'Japanese Yen', locale: 'ja-JP', fractionDigits: 0 },
+  { code: 'CAD', symbol: 'CA$', name: 'Canadian Dollar', locale: 'en-CA', fractionDigits: 2 },
+  { code: 'AUD', symbol: 'A$', name: 'Australian Dollar', locale: 'en-AU', fractionDigits: 2 },
+  { code: 'SGD', symbol: 'S$', name: 'Singapore Dollar', locale: 'en-SG', fractionDigits: 2 },
+  { code: 'AED', symbol: 'AED', name: 'UAE Dirham', locale: 'ar-AE', fractionDigits: 2 },
+  { code: 'CHF', symbol: 'CHF', name: 'Swiss Franc', locale: 'de-CH', fractionDigits: 2 },
+];
+
+export function getCurrencyInfo(currencyCode: string): CurrencyInfo {
+  const upper = (currencyCode || 'INR').toUpperCase().trim();
+  const found = SUPPORTED_CURRENCIES.find((c) => c.code === upper);
+  if (found) return found;
+
+  return {
+    code: upper,
+    symbol: upper,
+    name: upper,
+    locale: 'en-US',
+    fractionDigits: 2,
+  };
+}
+
+export function getCurrencySymbol(currencyCode: string): string {
+  return getCurrencyInfo(currencyCode).symbol;
+}
+
+let activeCurrencyCode = 'INR';
+
+export function setActiveCurrency(code: string): void {
+  if (code) {
+    activeCurrencyCode = code.toUpperCase().trim();
+  }
+}
+
+export function getActiveCurrency(): string {
+  return activeCurrencyCode;
+}
+
+const formatterCache = new Map<string, Intl.NumberFormat>();
+
+function getFormatter(currencyCode: string, compact: boolean): Intl.NumberFormat {
+  const info = getCurrencyInfo(currencyCode);
+  const key = `${info.code}_${compact}`;
+  const cached = formatterCache.get(key);
+  if (cached) return cached;
+
+  const digits = compact ? 0 : info.fractionDigits;
+  const formatter = new Intl.NumberFormat(info.locale, {
+    style: 'currency',
+    currency: info.code,
+    minimumFractionDigits: digits,
+    maximumFractionDigits: digits,
+  });
+
+  formatterCache.set(key, formatter);
+  return formatter;
+}
 
 /**
- * Formats integer cents into standard Indian currency format (e.g. 10050 -> "₹100.50").
+ * Formats integer cents into currency format (e.g. 10050 -> "₹100.50" or "$100.50").
  */
-export function formatINR(
+export function formatMoney(
   cents: number,
   options?: {
     showSign?: boolean;
     compactIfZeroPaise?: boolean;
-  }
+  },
+  currencyCode?: string
 ): string {
+  const code = currencyCode || activeCurrencyCode;
   const isNegative = cents < 0;
   const absCents = Math.abs(cents);
-  const rupees = absCents / 100;
+  const majorUnits = absCents / 100;
 
-  const hasPaise = absCents % 100 !== 0;
-  const formatter = (options?.compactIfZeroPaise && !hasPaise)
-    ? inrFormatterCompact
-    : inrFormatter;
+  const hasSubunits = absCents % 100 !== 0;
+  const isCompact = !!(options?.compactIfZeroPaise && !hasSubunits);
+  const formatter = getFormatter(code, isCompact);
 
-  const formatted = formatter.format(rupees);
+  const formatted = formatter.format(majorUnits);
 
   if (isNegative) {
-    return `-${formatted}`;
+    return formatted.startsWith('-') ? formatted : `-${formatted}`;
   }
   if (options?.showSign && cents > 0) {
     return `+${formatted}`;
@@ -52,13 +110,32 @@ export function formatINR(
 }
 
 /**
- * Parses user input string (e.g. "1500", "1500.50", "₹1,500.75") into integer cents.
- * Avoids direct float multiplication by separating integer rupees and fractional paise.
+ * Backward-compatible helper that defaults to active currency.
+ */
+export function formatINR(
+  cents: number,
+  options?: {
+    showSign?: boolean;
+    compactIfZeroPaise?: boolean;
+  }
+): string {
+  return formatMoney(cents, options, activeCurrencyCode);
+}
+
+/**
+ * Parses user input string (e.g. "1500", "1500.50", "₹1,500.75", "$1,500.75") into integer cents.
+ * Avoids direct float multiplication by separating integer units and fractional subunits.
  * Returns null if the string cannot be parsed into a positive integer cents value.
  */
-export function parseINRToCents(input: string): number | null {
-  // Strip whitespace, rupee symbols, commas
-  const cleaned = input.trim().replace(/₹/g, '').replace(/,/g, '').trim();
+export function parseMoneyToCents(input: string): number | null {
+  // Strip whitespace, symbols, commas
+  const cleaned = input
+    .trim()
+    .replace(/[₹$€£¥]/g, '')
+    .replace(/CA\$|A\$|S\$|AED|CHF/gi, '')
+    .replace(/,/g, '')
+    .trim();
+
   if (cleaned.length === 0) {
     return null;
   }
@@ -69,31 +146,33 @@ export function parseINRToCents(input: string): number | null {
     return null;
   }
 
-  const rupeeStr = match[1];
-  const paiseStr = match[2];
+  const majorStr = match[1];
+  const minorStr = match[2];
 
-  if (!rupeeStr) {
+  if (!majorStr) {
     return null;
   }
 
-  const rupees = parseInt(rupeeStr, 10);
-  if (Number.isNaN(rupees)) {
+  const major = parseInt(majorStr, 10);
+  if (Number.isNaN(major)) {
     return null;
   }
 
-  let paise = 0;
-  if (paiseStr !== undefined) {
-    if (paiseStr.length === 1) {
-      paise = parseInt(paiseStr, 10) * 10;
+  let minor = 0;
+  if (minorStr !== undefined) {
+    if (minorStr.length === 1) {
+      minor = parseInt(minorStr, 10) * 10;
     } else {
-      paise = parseInt(paiseStr.slice(0, 2), 10);
+      minor = parseInt(minorStr.slice(0, 2), 10);
     }
   }
 
-  const totalCents = rupees * 100 + paise;
+  const totalCents = major * 100 + minor;
   if (totalCents <= 0 || !Number.isSafeInteger(totalCents)) {
     return null;
   }
 
   return totalCents;
 }
+
+export const parseINRToCents = parseMoneyToCents;

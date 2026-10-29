@@ -505,6 +505,7 @@ export function generateSampleData(
     entries,
     categories: [...SEED_CATEGORIES],
     holdings: [...SEED_HOLDINGS],
+    currency: 'INR',
     lastModified: nowMs,
   };
 }

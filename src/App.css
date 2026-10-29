@@ -5,10 +5,10 @@
    ============================================================================ */
 
 :root {
-  /* Liquid Glass Material Defaults (Refined Mode) */
-  --glass-blur: 28px;
-  --glass-saturate: 165%;
-  --glass-opacity: 0.68;
+  /* Liquid Glass Material: Apple iOS 27 / macOS 27 Clear Mode (Always Active) */
+  --glass-blur: 38px;
+  --glass-saturate: 185%;
+  --glass-opacity: 0.46;
   --glass-fill: rgba(26, 26, 30, var(--glass-opacity));
   --glass-border: rgba(255, 255, 255, 0.12);
   --glass-highlight: rgba(255, 255, 255, 0.22);
@@ -68,25 +68,6 @@
   --shadow-lg: 0 16px 44px rgba(0, 0, 0, 0.45);
 
   --safe-bottom: env(safe-area-inset-bottom, 0px);
-}
-
-/* Glass Intensity Variations */
-:root[data-glass="clear"] {
-  --glass-blur: 38px;
-  --glass-saturate: 185%;
-  --glass-opacity: 0.46;
-}
-
-:root[data-glass="refined"] {
-  --glass-blur: 28px;
-  --glass-saturate: 165%;
-  --glass-opacity: 0.68;
-}
-
-:root[data-glass="tinted"] {
-  --glass-blur: 18px;
-  --glass-saturate: 135%;
-  --glass-opacity: 0.90;
 }
 
 /* Apple Light Mode Palette */
@@ -1685,9 +1666,10 @@ button, input, select, textarea {
   align-items: flex-end;
   justify-content: center;
   z-index: 100;
+  opacity: 1;
   backdrop-filter: blur(24px) saturate(140%);
   -webkit-backdrop-filter: blur(24px) saturate(140%);
-  animation: fadeIn 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: fadeIn 0.18s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 @media (min-width: 600px) {
@@ -2339,4 +2321,124 @@ button, input, select, textarea {
   flex-direction: column;
   gap: 2px;
 }
+
+/* Currency Selector & Conversion Modal */
+.form-select,
+.form-input {
+  background-color: var(--bg-input);
+  border: 1px solid var(--border-color);
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  font-size: 0.95rem;
+  color: var(--text-primary);
+  outline: none;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.form-select:focus,
+.form-input:focus {
+  border-color: var(--brand-primary);
+  box-shadow: 0 0 0 2px var(--brand-primary-tint);
+}
+
+.currency-selector-dropdown {
+  min-width: 190px;
+  max-width: 260px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.currency-conversion-content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.currency-rate-banner {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.rate-pair {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.currency-pill {
+  padding: 6px 12px;
+  border-radius: var(--radius-full);
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  font-weight: 600;
+  font-size: 0.88rem;
+}
+
+.currency-pill.active {
+  background-color: var(--brand-primary-tint);
+  border-color: var(--brand-primary);
+  color: var(--brand-primary);
+}
+
+.rate-arrow {
+  color: var(--text-muted);
+  font-size: 1.1rem;
+}
+
+.rate-value-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 0.95rem;
+}
+
+.rate-highlight {
+  color: var(--brand-primary);
+  font-size: 1.1rem;
+}
+
+.conversion-preview-box {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.conversion-warning-box {
+  background-color: rgba(255, 159, 10, 0.08);
+  border: 1px solid rgba(255, 159, 10, 0.25);
+  border-radius: var(--radius-md);
+  padding: 14px;
+}
+
+.warning-title {
+  color: #ff9f0a;
+  font-size: 0.9rem;
+  margin-bottom: 6px;
+}
+
+.warning-list {
+  padding-left: 18px;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  line-height: 1.4;
+}
+
+.modal-actions-row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
 

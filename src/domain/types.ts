@@ -76,6 +76,7 @@ export const AppDataSchema = z.object({
   entries: z.array(EntrySchema),
   categories: z.array(CategorySchema),
   holdings: z.array(PortfolioHoldingSchema).default([]),
+  currency: z.string().default('INR'),
   lastModified: z.number().int(),
 });
 export type AppData = z.infer<typeof AppDataSchema>;
