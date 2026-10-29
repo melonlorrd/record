@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useStore } from '../../store/storeContext';
 import { AssetClass, PortfolioHolding } from '../../domain/types';
 import { calculatePortfolioSummary, calculateRunningBalance, getActiveEntries } from '../../domain/analytics';
@@ -10,6 +10,13 @@ import {
   EditIcon,
 } from '../common/Icons';
 
+export interface LivePriceTick {
+  priceCents: number;
+  deltaPercent: number;
+  direction: 'up' | 'down';
+  timestamp: number;
+}
+
 export const PortfolioView: React.FC = () => {
   const { holdings, entries, currencySymbol } = useStore();
 
@@ -17,9 +24,121 @@ export const PortfolioView: React.FC = () => {
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [editingHolding, setEditingHolding] = useState<PortfolioHolding | null>(null);
 
-  const summary = useMemo(() => {
-    return calculatePortfolioSummary(holdings);
+  // Live Market Simulation State
+  const [isLiveActive, setIsLiveActive] = useState<boolean>(true);
+  const [priceTicks, setPriceTicks] = useState<Record<string, LivePriceTick>>({});
+
+  // Anchor and current live prices in memory (does not pollute baseline DB buy prices)
+  const anchorPricesRef = useRef<Record<string, number>>({});
+  const currentPricesRef = useRef<Record<string, number>>({});
+
+  // Initialize anchor prices when holdings are loaded or added
+  useEffect(() => {
+    for (const h of holdings) {
+      if (!anchorPricesRef.current[h.id]) {
+        anchorPricesRef.current[h.id] = h.currentNavOrPriceCents;
+        currentPricesRef.current[h.id] = h.currentNavOrPriceCents;
+      }
+    }
   }, [holdings]);
+
+  // Periodic micro-fluctuations interval (every 2.8s)
+  useEffect(() => {
+    if (!isLiveActive || holdings.length === 0) return;
+
+    const interval = setInterval(() => {
+      const activeHoldings = holdings.filter((h) => !h.deleted);
+      if (activeHoldings.length === 0) return;
+
+      const goldHolding = activeHoldings.find((h) => h.assetClass === 'gold');
+      const otherHoldings = activeHoldings.filter((h) => h.assetClass !== 'gold');
+
+      const candidates: PortfolioHolding[] = [];
+
+      // Physical Gold has 75% tick probability per cycle to satisfy "gold and stuff numbers go up and down"
+      if (goldHolding && Math.random() < 0.75) {
+        candidates.push(goldHolding);
+      }
+
+      // Pick 1-2 equities or mutual funds to tick along with gold
+      if (otherHoldings.length > 0) {
+        const randIndex = Math.floor(Math.random() * otherHoldings.length);
+        const pick = otherHoldings[randIndex];
+        if (pick && !candidates.some((c) => c.id === pick.id)) {
+          candidates.push(pick);
+        }
+      }
+
+      // Fallback: if candidates empty, pick at least one
+      if (candidates.length === 0) {
+        const fallback = activeHoldings[Math.floor(Math.random() * activeHoldings.length)];
+        if (fallback) {
+          candidates.push(fallback);
+        }
+      }
+
+      const now = Date.now();
+      const newTicks: Record<string, LivePriceTick> = {};
+
+      for (const h of candidates) {
+        const anchor = anchorPricesRef.current[h.id] || h.currentNavOrPriceCents;
+        const current = currentPricesRef.current[h.id] || h.currentNavOrPriceCents;
+
+        // Volatility limits per asset class
+        let maxStepPct = 0.28; // Gold ~0.28%
+        if (h.assetClass === 'equity') {
+          maxStepPct = 0.45; // Equities ~0.45%
+        } else if (h.assetClass === 'mutual_fund') {
+          maxStepPct = 0.12; // Mutual funds ~0.12%
+        }
+
+        // Bounded random walk with mean reversion towards anchor (clamped to +/- 3.5%)
+        const driftPct = ((current - anchor) / anchor) * 100;
+        let upProb = 0.50;
+        if (driftPct > 2.0) {
+          upProb = 0.25; // More likely to tick down if drifted high
+        } else if (driftPct < -2.0) {
+          upProb = 0.75; // More likely to tick up if drifted low
+        }
+
+        const isUp = Math.random() < upProb;
+        const stepPct = (0.06 + Math.random() * maxStepPct) * (isUp ? 1 : -1);
+
+        const newPrice = Math.max(1, Math.round(current * (1 + stepPct / 100)));
+        currentPricesRef.current[h.id] = newPrice;
+
+        newTicks[h.id] = {
+          priceCents: newPrice,
+          deltaPercent: stepPct,
+          direction: isUp ? 'up' : 'down',
+          timestamp: now,
+        };
+      }
+
+      setPriceTicks((prev) => ({
+        ...prev,
+        ...newTicks,
+      }));
+    }, 2800);
+
+    return () => clearInterval(interval);
+  }, [isLiveActive, holdings]);
+
+  // Compute effective holdings with live simulated market prices
+  const effectiveHoldings = useMemo(() => {
+    return holdings.map((h) => {
+      const live = priceTicks[h.id];
+      if (!live) return h;
+      return {
+        ...h,
+        currentNavOrPriceCents: live.priceCents,
+      };
+    });
+  }, [holdings, priceTicks]);
+
+  const summary = useMemo(() => {
+    return calculatePortfolioSummary(effectiveHoldings);
+  }, [effectiveHoldings]);
 
   // Calculate liquid savings from ledger running balance
   const liquidCashCents = useMemo(() => {
@@ -56,17 +175,31 @@ export const PortfolioView: React.FC = () => {
             Track Mutual Funds, Equities, and Gold holdings with live valuation and net worth.
           </p>
         </div>
-        <button
-          type="button"
-          className="btn btn-primary"
-          onClick={() => {
-            setEditingHolding(null);
-            setIsAddOpen(true);
-          }}
-        >
-          <PlusIcon size={16} />
-          <span>Add Holding</span>
-        </button>
+        <div className="portfolio-header-actions">
+          <button
+            type="button"
+            className={`live-market-pill-btn ${isLiveActive ? 'active' : 'paused'}`}
+            onClick={() => setIsLiveActive((prev) => !prev)}
+            title={isLiveActive ? 'Live Market Ticker active (click to pause)' : 'Live Market Ticker paused (click to resume)'}
+            aria-label="Toggle Live Market Ticker"
+          >
+            <span className={`live-pulse-dot ${isLiveActive ? 'pulsing' : ''}`} />
+            <span className="live-ticker-label">Live Market</span>
+            <span className="live-ticker-state-badge">{isLiveActive ? 'LIVE' : 'PAUSED'}</span>
+          </button>
+
+          <button
+            type="button"
+            className="btn btn-primary"
+            onClick={() => {
+              setEditingHolding(null);
+              setIsAddOpen(true);
+            }}
+          >
+            <PlusIcon size={16} />
+            <span>Add Holding</span>
+          </button>
+        </div>
       </div>
 
       {/* Headline Stat Tiles */}
@@ -237,6 +370,9 @@ export const PortfolioView: React.FC = () => {
           {filteredHoldings.map((h, idx) => {
             const meta = assetClassLabel(h.assetClass);
             const isProfit = h.gainCents >= 0;
+            const tick = priceTicks[h.id];
+            const isRecentTick = tick && Date.now() - tick.timestamp < 2600;
+            const tickDirection = isRecentTick ? tick.direction : null;
 
             return (
               <div
@@ -269,13 +405,23 @@ export const PortfolioView: React.FC = () => {
                       <span className="dot-sep">•</span>
                       <span>Avg {currencySymbol}{(h.buyAvgPriceCents / 100).toFixed(2)}</span>
                       <span className="dot-sep">•</span>
-                      <span>Now {currencySymbol}{(h.currentNavOrPriceCents / 100).toFixed(2)}</span>
+                      <span className={`live-price-wrapper ${tickDirection ? `tick-${tickDirection}` : ''}`}>
+                        <span>Now {currencySymbol}{(h.currentNavOrPriceCents / 100).toFixed(2)}</span>
+                        {isRecentTick && (
+                          <span key={`${h.id}-${tick.timestamp}`} className={`live-tick-chip ${tick.direction}`}>
+                            {tick.direction === 'up' ? '▲ +' : '▼ '}{tick.deltaPercent.toFixed(2)}%
+                          </span>
+                        )}
+                      </span>
                     </div>
                   </div>
                 </div>
 
                 <div className="inset-row-right">
-                  <div className="holding-values-stack">
+                  <div
+                    className={`holding-values-stack ${tickDirection ? `stack-tick-${tickDirection}` : ''}`}
+                    key={`stack-${h.id}-${tick?.timestamp ?? 0}`}
+                  >
                     <span className="row-amount tabular-nums">
                       {formatINR(h.currentValueCents, { compactIfZeroPaise: true })}
                     </span>
