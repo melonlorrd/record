@@ -171,8 +171,14 @@ const MainApp: React.FC = () => {
             if (activeTab !== 'ledger') {
               setActiveTab('ledger');
               setIsSearchActive(true);
+              window.scrollTo({ top: 0, behavior: 'smooth' });
             } else {
-              setIsSearchActive((prev) => !prev);
+              setIsSearchActive((prev) => {
+                if (!prev) {
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+                return !prev;
+              });
             }
           }}
         />

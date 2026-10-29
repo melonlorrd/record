@@ -163,8 +163,8 @@ export const LedgerView: React.FC<LedgerViewProps> = ({
       {/* Top Search, Add, and Filter Header */}
       <section className="ledger-top-section" aria-label="Ledger Controls">
         <div className="search-and-action-bar">
-          {/* iOS 27 Pill Search Field */}
-          <div className="pill-search-container">
+          {/* iOS 27 Pill Search Field (adaptive: integrated on mobile, always visible on desktop) */}
+          <div className={`pill-search-container ${isSearchActiveMobile || searchQuery ? 'mobile-visible' : 'mobile-hidden'}`}>
             <span className="search-icon-adornment">
               <SearchIcon size={16} />
             </span>
@@ -176,7 +176,7 @@ export const LedgerView: React.FC<LedgerViewProps> = ({
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pill-search-input"
             />
-            {searchQuery && (
+            {(searchQuery || isSearchActiveMobile) && (
               <button
                 type="button"
                 className="search-clear-circle"
@@ -184,69 +184,72 @@ export const LedgerView: React.FC<LedgerViewProps> = ({
                   setSearchQuery('');
                   onCloseMobileSearch?.();
                 }}
-                aria-label="Clear search"
+                aria-label="Close search"
               >
                 <CloseIcon size={12} />
               </button>
             )}
           </div>
 
-          {/* Native pull-down style filter/sort triggers */}
-          <div className="pull-down-triggers-row">
-            <div className="pull-down-capsule">
-              <select
-                id="month-select"
-                value={selectedMonth}
-                onChange={(e) => setSelectedMonth(e.target.value)}
-                className="pull-down-select"
-                aria-label="Filter by Month"
-              >
-                <option value="ALL">All Months</option>
-                {availableMonths.map((m) => {
-                  const [year, month] = m.split('-');
-                  const d = new Date(parseInt(year!, 10), parseInt(month!, 10) - 1, 1);
-                  const label = new Intl.DateTimeFormat('en-IN', { month: 'short', year: 'numeric' }).format(d);
-                  return (
-                    <option key={m} value={m}>
-                      {label}
-                    </option>
-                  );
-                })}
-              </select>
-              <ChevronDownIcon size={12} className="select-chevron" />
-            </div>
+          {/* Unified Controls Row: Add + Month + Category */}
+          <div className="ledger-controls-row">
+            {/* Inline Tinted Glass Add Capsule */}
+            <button
+              type="button"
+              className="glass-add-capsule-btn"
+              onClick={() => setIsQuickAddOpen(true)}
+              aria-label="Add transaction"
+            >
+              <PlusIcon size={16} />
+              <span>Add</span>
+            </button>
 
-            <div className="pull-down-capsule">
-              <select
-                id="category-select"
-                value={selectedCategoryId}
-                onChange={(e) => setSelectedCategoryId(e.target.value)}
-                className="pull-down-select"
-                aria-label="Filter by Category"
-              >
-                <option value="ALL">All Categories</option>
-                {categories
-                  .filter((c) => !c.deleted)
-                  .map((cat) => (
-                    <option key={cat.id} value={cat.id}>
-                      {cat.name} {cat.archived ? '(Archived)' : ''}
-                    </option>
-                  ))}
-              </select>
-              <ChevronDownIcon size={12} className="select-chevron" />
+            {/* Native pull-down style filter/sort triggers */}
+            <div className="pull-down-triggers-row">
+              <div className="pull-down-capsule">
+                <select
+                  id="month-select"
+                  value={selectedMonth}
+                  onChange={(e) => setSelectedMonth(e.target.value)}
+                  className="pull-down-select"
+                  aria-label="Filter by Month"
+                >
+                  <option value="ALL">All Months</option>
+                  {availableMonths.map((m) => {
+                    const [year, month] = m.split('-');
+                    const d = new Date(parseInt(year!, 10), parseInt(month!, 10) - 1, 1);
+                    const label = new Intl.DateTimeFormat('en-IN', { month: 'short', year: 'numeric' }).format(d);
+                    return (
+                      <option key={m} value={m}>
+                        {label}
+                      </option>
+                    );
+                  })}
+                </select>
+                <ChevronDownIcon size={12} className="select-chevron" />
+              </div>
+
+              <div className="pull-down-capsule">
+                <select
+                  id="category-select"
+                  value={selectedCategoryId}
+                  onChange={(e) => setSelectedCategoryId(e.target.value)}
+                  className="pull-down-select"
+                  aria-label="Filter by Category"
+                >
+                  <option value="ALL">All Categories</option>
+                  {categories
+                    .filter((c) => !c.deleted)
+                    .map((cat) => (
+                      <option key={cat.id} value={cat.id}>
+                        {cat.name} {cat.archived ? '(Archived)' : ''}
+                      </option>
+                    ))}
+                </select>
+                <ChevronDownIcon size={12} className="select-chevron" />
+              </div>
             </div>
           </div>
-
-          {/* Inline Tinted Glass Add Capsule */}
-          <button
-            type="button"
-            className="glass-add-capsule-btn"
-            onClick={() => setIsQuickAddOpen(true)}
-            aria-label="Add transaction"
-          >
-            <PlusIcon size={16} />
-            <span>Add</span>
-          </button>
         </div>
 
         {/* Quick Filter Capsule Segmented Row */}
