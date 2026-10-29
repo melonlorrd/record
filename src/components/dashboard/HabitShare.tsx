@@ -26,9 +26,9 @@ export const HabitShare: React.FC<HabitShareProps> = ({ weeks }) => {
           if (!week) return '';
 
           return `<div style="font-weight:600;margin-bottom:4px;">${week.weekKey}</div>
-            <div style="color:#10b981;">🌱 Need: ${formatINR(week.needCents)} (${week.needSharePercent}%)</div>
-            <div style="color:#f59e0b;">☕ Want: ${formatINR(week.wantCents)} (${week.wantSharePercent}%)</div>
-            <div style="color:#8b5cf6;">⚡ Impulse: ${formatINR(week.impulseCents)} (${week.impulseSharePercent}%)</div>
+            <div style="color:#10b981;">Need: ${formatINR(week.needCents)} (${week.needSharePercent}%)</div>
+            <div style="color:#f59e0b;">Want: ${formatINR(week.wantCents)} (${week.wantSharePercent}%)</div>
+            <div style="color:#8b5cf6;">Impulse: ${formatINR(week.impulseCents)} (${week.impulseSharePercent}%)</div>
             <div style="border-top:1px solid #475569;margin-top:4px;padding-top:4px;font-weight:bold;">Total: ${formatINR(week.totalCents)}</div>`;
         },
       },
@@ -61,7 +61,7 @@ export const HabitShare: React.FC<HabitShareProps> = ({ weeks }) => {
       backgroundColor: 'transparent',
       series: [
         {
-          name: '🌱 Need',
+          name: 'Need',
           type: 'bar',
           stack: 'intent',
           data: needData,
@@ -69,7 +69,7 @@ export const HabitShare: React.FC<HabitShareProps> = ({ weeks }) => {
           barMaxWidth: 32,
         },
         {
-          name: '☕ Want',
+          name: 'Want',
           type: 'bar',
           stack: 'intent',
           data: wantData,
@@ -77,7 +77,7 @@ export const HabitShare: React.FC<HabitShareProps> = ({ weeks }) => {
           barMaxWidth: 32,
         },
         {
-          name: '⚡ Impulse',
+          name: 'Impulse',
           type: 'bar',
           stack: 'intent',
           data: impulseData,

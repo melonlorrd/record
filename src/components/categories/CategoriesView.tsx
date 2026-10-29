@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useStore } from '../../store/storeContext';
 import { Category } from '../../domain/types';
 import { Modal } from '../common/Modal';
+import { PlusIcon, EditIcon, TrashIcon } from '../common/Icons';
 
 const PALETTE = [
   '#0969da', // GitHub Blue
@@ -84,7 +85,8 @@ export const CategoriesView: React.FC = () => {
           className="btn btn-primary"
           onClick={() => setIsAddOpen(true)}
         >
-          + New Category
+          <PlusIcon size={16} />
+          <span>New Category</span>
         </button>
       </div>
 
@@ -109,8 +111,9 @@ export const CategoriesView: React.FC = () => {
                   e.stopPropagation();
                   openEdit(cat);
                 }}
+                aria-label={`Edit ${cat.name}`}
               >
-                ✏️
+                <EditIcon size={14} />
               </button>
             </div>
           ))}
@@ -230,7 +233,8 @@ export const CategoriesView: React.FC = () => {
                 className="btn btn-danger"
                 onClick={() => handleDelete(editingCat.id, editingCat.name)}
               >
-                Delete
+                <TrashIcon size={14} />
+                <span>Delete</span>
               </button>
             )}
             <div className="button-group">

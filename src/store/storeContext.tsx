@@ -66,6 +66,8 @@ export interface ToastState {
   durationMs?: number;
 }
 
+export type ThemeMode = 'light' | 'dark' | 'auto';
+
 export interface StoreContextValue {
   isLoaded: boolean;
   isPersistedStorage: boolean;
@@ -77,8 +79,12 @@ export interface StoreContextValue {
   currency: string;
   currencySymbol: string;
   theme: 'dark' | 'light';
+  themeMode: ThemeMode;
+  glassLevel: number;
   toast: ToastState | null;
   toggleTheme: () => void;
+  setThemeMode: (mode: ThemeMode) => void;
+  setGlassLevel: (level: number) => void;
   convertAllDataCurrency: (targetCurrency: string, exchangeRate: number) => Promise<void>;
   showToast: (toast: Omit<ToastState, 'id'>) => void;
   hideToast: () => void;
@@ -105,31 +111,77 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [isLoaded, setIsLoaded] = useState(false);
   const [isPersistedStorage, setIsPersistedStorage] = useState(false);
   const [toast, setToast] = useState<ToastState | null>(null);
-  const [theme, setTheme] = useState<'dark' | 'light'>(() => {
+
+  const [themeMode, setThemeModeState] = useState<ThemeMode>(() => {
     try {
-      const saved = localStorage.getItem('kosh_theme');
-      if (saved === 'dark' || saved === 'light') return saved;
-      if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
-        return 'light';
-      }
-    } catch {
-      // fallback
-    }
+      const saved = localStorage.getItem('record_theme_mode');
+      if (saved === 'light' || saved === 'dark' || saved === 'auto') return saved;
+      const legacy = localStorage.getItem('kosh_theme');
+      if (legacy === 'light' || legacy === 'dark') return legacy;
+    } catch {}
     return 'dark';
   });
 
-  // Apply theme and clear glass attributes to document
+  const [glassLevel, setGlassLevelState] = useState<number>(() => {
+    try {
+      const saved = localStorage.getItem('record_glass_level');
+      if (saved !== null) {
+        const parsed = parseFloat(saved);
+        if (!Number.isNaN(parsed) && parsed >= 0 && parsed <= 1) return parsed;
+      }
+    } catch {}
+    return 0.35;
+  });
+
+  const [systemDark, setSystemDark] = useState<boolean>(() => {
+    try {
+      return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    } catch {
+      return true;
+    }
+  });
+
+  useEffect(() => {
+    if (!window.matchMedia) return;
+    const media = window.matchMedia('(prefers-color-scheme: dark)');
+    const listener = (e: MediaQueryListEvent) => setSystemDark(e.matches);
+    media.addEventListener('change', listener);
+    return () => media.removeEventListener('change', listener);
+  }, []);
+
+  const theme: 'dark' | 'light' = themeMode === 'auto' ? (systemDark ? 'dark' : 'light') : themeMode;
+
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
-    document.documentElement.setAttribute('data-glass', 'clear');
+    document.documentElement.style.setProperty('--glass-level', glassLevel.toString());
+  }, [theme, glassLevel]);
+
+  const setThemeMode = useCallback((mode: ThemeMode) => {
+    setThemeModeState(mode);
     try {
-      localStorage.setItem('kosh_theme', theme);
+      localStorage.setItem('record_theme_mode', mode);
     } catch {}
-  }, [theme]);
+  }, []);
+
+  const setGlassLevel = useCallback((level: number) => {
+    const clamped = Math.max(0, Math.min(1, level));
+    setGlassLevelState(clamped);
+    document.documentElement.style.setProperty('--glass-level', clamped.toString());
+    try {
+      localStorage.setItem('record_glass_level', clamped.toString());
+    } catch {}
+  }, []);
 
   const toggleTheme = useCallback(() => {
-    setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
-  }, []);
+    setThemeModeState((prev) => {
+      const current = prev === 'auto' ? (systemDark ? 'dark' : 'light') : prev;
+      const next = current === 'dark' ? 'light' : 'dark';
+      try {
+        localStorage.setItem('record_theme_mode', next);
+      } catch {}
+      return next;
+    });
+  }, [systemDark]);
 
   const hideToast = useCallback(() => {
     setToast(null);
@@ -555,6 +607,10 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     currency,
     currencySymbol,
     theme,
+    themeMode,
+    setThemeMode,
+    glassLevel,
+    setGlassLevel,
     toast,
     toggleTheme,
     convertAllDataCurrency,

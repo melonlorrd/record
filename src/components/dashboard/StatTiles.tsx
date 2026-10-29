@@ -15,9 +15,8 @@ export const StatTiles: React.FC<StatTilesProps> = ({ summary }) => {
       <div className="stat-tile card">
         <div className="stat-tile-header">
           <span className="stat-title">Total Spent</span>
-          <span className="stat-icon">💸</span>
         </div>
-        <div className="stat-value expense-text">
+        <div className="stat-value expense-text tabular-nums">
           {formatINR(summary.spentCents, { compactIfZeroPaise: true })}
         </div>
         <div className="stat-footer">
@@ -40,9 +39,8 @@ export const StatTiles: React.FC<StatTilesProps> = ({ summary }) => {
       <div className="stat-tile card">
         <div className="stat-tile-header">
           <span className="stat-title">Total Income</span>
-          <span className="stat-icon">💰</span>
         </div>
-        <div className="stat-value income-text">
+        <div className="stat-value income-text tabular-nums">
           {formatINR(summary.incomeCents, { compactIfZeroPaise: true })}
         </div>
         <div className="stat-footer">
@@ -65,9 +63,8 @@ export const StatTiles: React.FC<StatTilesProps> = ({ summary }) => {
       <div className="stat-tile card">
         <div className="stat-tile-header">
           <span className="stat-title">Net Savings</span>
-          <span className="stat-icon">{isNetPositive ? '📈' : '📉'}</span>
         </div>
-        <div className={`stat-value ${isNetPositive ? 'income-text' : 'expense-text'}`}>
+        <div className={`stat-value tabular-nums ${isNetPositive ? 'income-text' : 'expense-text'}`}>
           {formatINR(summary.netCents, { compactIfZeroPaise: true })}
         </div>
         <div className="stat-footer">
@@ -81,9 +78,8 @@ export const StatTiles: React.FC<StatTilesProps> = ({ summary }) => {
       <div className="stat-tile card">
         <div className="stat-tile-header">
           <span className="stat-title">Avg Daily Spend</span>
-          <span className="stat-icon">📅</span>
         </div>
-        <div className="stat-value">
+        <div className="stat-value tabular-nums">
           {formatINR(summary.avgDailySpendCents, { compactIfZeroPaise: true })}
         </div>
         <div className="stat-footer">

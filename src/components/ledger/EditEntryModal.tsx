@@ -3,6 +3,7 @@ import { useStore } from '../../store/storeContext';
 import { Entry, EntryKind, Intent } from '../../domain/types';
 import { parseINRToCents } from '../../domain/money';
 import { Modal } from '../common/Modal';
+import { NeedIcon, WantIcon, ImpulseIcon } from '../common/Icons';
 
 export interface EditEntryModalProps {
   entry: Entry | null;
@@ -146,21 +147,21 @@ export const EditEntryModal: React.FC<EditEntryModalProps> = ({ entry, onClose }
                 className={`segmented-btn ${intent === 'need' ? 'active-need' : ''}`}
                 onClick={() => setIntent('need')}
               >
-                🌱 Need
+                <NeedIcon size={14} /> <span>Need</span>
               </button>
               <button
                 type="button"
                 className={`segmented-btn ${intent === 'want' ? 'active-want' : ''}`}
                 onClick={() => setIntent('want')}
               >
-                ☕ Want
+                <WantIcon size={14} /> <span>Want</span>
               </button>
               <button
                 type="button"
                 className={`segmented-btn ${intent === 'impulse' ? 'active-impulse' : ''}`}
                 onClick={() => setIntent('impulse')}
               >
-                ⚡ Impulse
+                <ImpulseIcon size={14} /> <span>Impulse</span>
               </button>
             </div>
           </div>

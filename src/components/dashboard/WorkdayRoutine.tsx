@@ -31,10 +31,10 @@ export const WorkdayRoutine: React.FC<WorkdayRoutineProps> = ({ entries, categor
   );
 
   const quickRoutineHours = [
-    { hour: 10, label: '10 AM', icon: '☕', note: 'Chai & Breakfast' },
-    { hour: 13, label: '1 PM', icon: '🍱', note: 'Lunch Break' },
-    { hour: 16, label: '4 PM', icon: '🫖', note: 'Afternoon Tea & Snack' },
-    { hour: 19, label: '7 PM', icon: '🌆', note: 'Post-Work / Dinner' },
+    { hour: 10, label: '10 AM', note: 'Chai & Breakfast' },
+    { hour: 13, label: '1 PM', note: 'Lunch Break' },
+    { hour: 16, label: '4 PM', note: 'Afternoon Tea & Snack' },
+    { hour: 19, label: '7 PM', note: 'Post-Work / Dinner' },
   ];
 
   return (
@@ -44,7 +44,8 @@ export const WorkdayRoutine: React.FC<WorkdayRoutineProps> = ({ entries, categor
           <div className="routine-title-row">
             <h3>Workday Routine & Habit Clock</h3>
             <span className="live-clock-pill">
-              {insight.isCurrentlyWorkday ? '💼 Workday' : '🌴 Weekend'} • {currentParts.hour % 12 === 0 ? 12 : currentParts.hour % 12}:{String(currentParts.minute).padStart(2, '0')} {currentParts.hour >= 12 ? 'PM' : 'AM'}
+              <span className="status-dot-active" />
+              {insight.isCurrentlyWorkday ? 'Workday' : 'Weekend'} • {currentParts.hour % 12 === 0 ? 12 : currentParts.hour % 12}:{String(currentParts.minute).padStart(2, '0')} {currentParts.hour >= 12 ? 'PM' : 'AM'}
             </span>
           </div>
           <span className="text-muted small-text">
@@ -62,7 +63,7 @@ export const WorkdayRoutine: React.FC<WorkdayRoutineProps> = ({ entries, categor
               onClick={() => setSelectedHour(qh.hour)}
               title={qh.note}
             >
-              <span>{qh.icon}</span> {qh.label}
+              {qh.label}
             </button>
           ))}
         </div>
@@ -109,13 +110,6 @@ export const WorkdayRoutine: React.FC<WorkdayRoutineProps> = ({ entries, categor
       {/* Routine Detail Card */}
       <div className="routine-detail-box">
         <div className="routine-banner">
-          <div className="routine-banner-icon">
-            {selectedHour >= 6 && selectedHour < 12 && '☕'}
-            {selectedHour >= 12 && selectedHour < 15 && '🍱'}
-            {selectedHour >= 15 && selectedHour < 18 && '🫖'}
-            {selectedHour >= 18 && selectedHour < 22 && '🍲'}
-            {(selectedHour >= 22 || selectedHour < 6) && '🌙'}
-          </div>
           <div className="routine-banner-text">
             <h4 className="routine-banner-heading">
               {insight.selectedTimeRangeLabel} Habit Profile

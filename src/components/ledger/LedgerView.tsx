@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { useStore } from '../../store/storeContext';
 import { Entry, Category } from '../../domain/types';
 import { formatINR } from '../../domain/money';
@@ -6,15 +6,46 @@ import { formatDayHeader, formatTimeLabel, toISODateInTz, toISOMonthInTz } from 
 import { getActiveEntries } from '../../domain/analytics';
 import { QuickAddModal } from './QuickAddModal';
 import { EditEntryModal } from './EditEntryModal';
+import {
+  SearchIcon,
+  PlusIcon,
+  CloseIcon,
+  NeedIcon,
+  WantIcon,
+  ImpulseIcon,
+  EditIcon,
+  TrashIcon,
+  LedgerIcon,
+  ChevronDownIcon,
+} from '../common/Icons';
 
-export const LedgerView: React.FC = () => {
-  const { entries, categories, softDeleteEntry, currencySymbol } = useStore();
+type QuickFilter = 'ALL' | 'EXPENSE' | 'INCOME' | 'NEED' | 'WANT' | 'IMPULSE';
+
+export interface LedgerViewProps {
+  isSearchActiveMobile?: boolean;
+  onCloseMobileSearch?: () => void;
+}
+
+export const LedgerView: React.FC<LedgerViewProps> = ({
+  isSearchActiveMobile = false,
+  onCloseMobileSearch,
+}) => {
+  const { entries, categories, softDeleteEntry } = useStore();
 
   const [searchQuery, setSearchQuery] = useState('');
+  const [quickFilter, setQuickFilter] = useState<QuickFilter>('ALL');
   const [selectedMonth, setSelectedMonth] = useState('ALL');
   const [selectedCategoryId, setSelectedCategoryId] = useState('ALL');
   const [isQuickAddOpen, setIsQuickAddOpen] = useState(false);
   const [editingEntry, setEditingEntry] = useState<Entry | null>(null);
+
+  const searchInputRef = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    if (isSearchActiveMobile) {
+      searchInputRef.current?.focus();
+    }
+  }, [isSearchActiveMobile]);
 
   // Map category ID to Category object
   const categoryMap = useMemo(() => {
@@ -52,6 +83,13 @@ export const LedgerView: React.FC = () => {
         return false;
       }
 
+      // Quick intent / kind filter
+      if (quickFilter === 'EXPENSE' && entry.kind !== 'expense') return false;
+      if (quickFilter === 'INCOME' && entry.kind !== 'income') return false;
+      if (quickFilter === 'NEED' && entry.intent !== 'need') return false;
+      if (quickFilter === 'WANT' && entry.intent !== 'want') return false;
+      if (quickFilter === 'IMPULSE' && entry.intent !== 'impulse') return false;
+
       // Search query (note, category name, tags)
       if (searchQuery.trim().length > 0) {
         const q = searchQuery.toLowerCase();
@@ -64,7 +102,7 @@ export const LedgerView: React.FC = () => {
 
       return true;
     }).sort((a, b) => b.occurredAt - a.occurredAt); // Newest first
-  }, [entries, selectedMonth, selectedCategoryId, searchQuery, categoryMap]);
+  }, [entries, selectedMonth, selectedCategoryId, quickFilter, searchQuery, categoryMap]);
 
   // Group filtered entries by calendar day (ISO date)
   const groupedByDay = useMemo(() => {
@@ -111,248 +149,247 @@ export const LedgerView: React.FC = () => {
     return groups;
   }, [filteredEntries]);
 
+  const quickFilterOptions: { key: QuickFilter; label: string }[] = [
+    { key: 'ALL', label: 'All' },
+    { key: 'EXPENSE', label: 'Expenses' },
+    { key: 'INCOME', label: 'Income' },
+    { key: 'NEED', label: 'Needs' },
+    { key: 'WANT', label: 'Wants' },
+    { key: 'IMPULSE', label: 'Impulses' },
+  ];
+
   return (
     <div className="ledger-view">
-      {/* Header and Filter Controls */}
-      <div className="ledger-controls card">
-        <div className="search-and-add-row">
-          <div className="search-input-wrapper">
-            <span className="search-icon">🔍</span>
+      {/* Top Search, Add, and Filter Header */}
+      <section className="ledger-top-section" aria-label="Ledger Controls">
+        <div className="search-and-action-bar">
+          {/* iOS 27 Pill Search Field */}
+          <div className="pill-search-container">
+            <span className="search-icon-adornment">
+              <SearchIcon size={16} />
+            </span>
             <input
+              ref={searchInputRef}
               type="text"
               placeholder="Search note, category, or tag..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="search-input"
+              className="pill-search-input"
             />
             {searchQuery && (
               <button
                 type="button"
-                className="search-clear-btn"
-                onClick={() => setSearchQuery('')}
+                className="search-clear-circle"
+                onClick={() => {
+                  setSearchQuery('');
+                  onCloseMobileSearch?.();
+                }}
+                aria-label="Clear search"
               >
-                ✕
+                <CloseIcon size={12} />
               </button>
             )}
           </div>
+
+          {/* Native pull-down style filter/sort triggers */}
+          <div className="pull-down-triggers-row">
+            <div className="pull-down-capsule">
+              <select
+                id="month-select"
+                value={selectedMonth}
+                onChange={(e) => setSelectedMonth(e.target.value)}
+                className="pull-down-select"
+                aria-label="Filter by Month"
+              >
+                <option value="ALL">All Months</option>
+                {availableMonths.map((m) => {
+                  const [year, month] = m.split('-');
+                  const d = new Date(parseInt(year!, 10), parseInt(month!, 10) - 1, 1);
+                  const label = new Intl.DateTimeFormat('en-IN', { month: 'short', year: 'numeric' }).format(d);
+                  return (
+                    <option key={m} value={m}>
+                      {label}
+                    </option>
+                  );
+                })}
+              </select>
+              <ChevronDownIcon size={12} className="select-chevron" />
+            </div>
+
+            <div className="pull-down-capsule">
+              <select
+                id="category-select"
+                value={selectedCategoryId}
+                onChange={(e) => setSelectedCategoryId(e.target.value)}
+                className="pull-down-select"
+                aria-label="Filter by Category"
+              >
+                <option value="ALL">All Categories</option>
+                {categories
+                  .filter((c) => !c.deleted)
+                  .map((cat) => (
+                    <option key={cat.id} value={cat.id}>
+                      {cat.name} {cat.archived ? '(Archived)' : ''}
+                    </option>
+                  ))}
+              </select>
+              <ChevronDownIcon size={12} className="select-chevron" />
+            </div>
+          </div>
+
+          {/* Inline Tinted Glass Add Capsule */}
           <button
             type="button"
-            className="btn btn-primary btn-add-transaction"
+            className="glass-add-capsule-btn"
             onClick={() => setIsQuickAddOpen(true)}
+            aria-label="Add transaction"
           >
-            + Add
+            <PlusIcon size={16} />
+            <span>Add</span>
           </button>
         </div>
 
-        <div className="filter-dropdowns-row">
-          <div className="filter-select-group">
-            <label className="filter-label" htmlFor="month-select">Month</label>
-            <select
-              id="month-select"
-              value={selectedMonth}
-              onChange={(e) => setSelectedMonth(e.target.value)}
-              className="select-input"
-            >
-              <option value="ALL">All Months</option>
-              {availableMonths.map((m) => {
-                const [year, month] = m.split('-');
-                const d = new Date(parseInt(year!, 10), parseInt(month!, 10) - 1, 1);
-                const label = new Intl.DateTimeFormat('en-IN', { month: 'short', year: 'numeric' }).format(d);
-                return (
-                  <option key={m} value={m}>
-                    {label}
-                  </option>
-                );
-              })}
-            </select>
-          </div>
-
-          <div className="filter-select-group">
-            <label className="filter-label" htmlFor="category-select">Category</label>
-            <select
-              id="category-select"
-              value={selectedCategoryId}
-              onChange={(e) => setSelectedCategoryId(e.target.value)}
-              className="select-input"
-            >
-              <option value="ALL">All Categories</option>
-              {categories
-                .filter((c) => !c.deleted)
-                .map((cat) => (
-                  <option key={cat.id} value={cat.id}>
-                    {cat.name} {cat.archived ? '(Archived)' : ''}
-                  </option>
-                ))}
-            </select>
-          </div>
+        {/* Quick Filter Capsule Segmented Row */}
+        <div className="quick-filter-capsule-row" role="radiogroup" aria-label="Filter by category or intent">
+          {quickFilterOptions.map((opt) => {
+            const isActive = quickFilter === opt.key;
+            return (
+              <button
+                type="button"
+                key={opt.key}
+                className={`quick-filter-chip ${isActive ? 'active' : ''}`}
+                onClick={() => setQuickFilter(opt.key)}
+                aria-checked={isActive}
+                role="radio"
+              >
+                {opt.label}
+              </button>
+            );
+          })}
         </div>
-      </div>
+      </section>
 
-      {/* Ledger Entries List */}
-      <div className="ledger-list">
+      {/* Inset-Grouped Ledger Entries List */}
+      <div className="inset-grouped-container" role="feed" aria-label="Transaction history">
         {groupedByDay.length === 0 ? (
-          <div className="empty-state card">
-            <div className="empty-state-icon">💸</div>
-            <h3>No transactions found</h3>
-            <p>Try adjusting your search filters or record a new transaction.</p>
+          <div className="empty-state-card">
+            <div className="empty-state-icon-circle">
+              <LedgerIcon size={32} />
+            </div>
+            <h3 className="empty-state-title">No transactions found</h3>
+            <p className="empty-state-subtitle">Try adjusting your filters or record a new transaction.</p>
             <button
               type="button"
-              className="btn btn-primary"
+              className="glass-add-capsule-btn"
               onClick={() => setIsQuickAddOpen(true)}
             >
-              Add First Transaction
+              <PlusIcon size={16} />
+              <span>Record First Transaction</span>
             </button>
           </div>
         ) : (
           groupedByDay.map((group) => (
-            <div key={group.dateKey} className="day-group">
-              <div className="day-group-header">
-                <span className="day-group-title">{group.headerLabel}</span>
-                <span className="day-group-totals">
+            <div key={group.dateKey} className="inset-date-section">
+              {/* Date Header: Date left, daily total right */}
+              <div className="inset-section-header">
+                <span className="section-header-date">{group.headerLabel}</span>
+                <span className="section-header-totals">
                   {group.dayTotalIncomeCents > 0 && (
-                    <span className="day-income-tag">
+                    <span className="day-total-income">
                       +{formatINR(group.dayTotalIncomeCents, { compactIfZeroPaise: true })}
                     </span>
                   )}
                   {group.dayTotalExpenseCents > 0 && (
-                    <span className="day-expense-tag">
+                    <span className="day-total-expense">
                       -{formatINR(group.dayTotalExpenseCents, { compactIfZeroPaise: true })}
                     </span>
                   )}
                 </span>
               </div>
 
-              {/* Responsive Container: Cards on Mobile, Table on Wide screens */}
-              <div className="transactions-container">
-                {/* Mobile Cards */}
-                <div className="mobile-cards-list">
-                  {group.entries.map((entry) => {
-                    const cat = categoryMap.get(entry.categoryId);
-                    const isIncome = entry.kind === 'income';
+              {/* Grouped Inset Card */}
+              <div className="inset-group-card">
+                {group.entries.map((entry, idx) => {
+                  const cat = categoryMap.get(entry.categoryId);
+                  const isIncome = entry.kind === 'income';
 
-                    return (
-                      <div
-                        key={entry.id}
-                        className="entry-card card"
-                        onClick={() => setEditingEntry(entry)}
-                        role="button"
-                        tabIndex={0}
-                      >
-                        <div className="entry-card-left">
-                          <span
-                            className="entry-color-dot"
-                            style={{ backgroundColor: cat ? cat.color : '#94a3b8' }}
-                          />
-                          <div className="entry-details">
-                            <div className="entry-title-row">
-                              <span className="entry-note">
-                                {entry.note || (cat ? cat.name : 'Uncategorized')}
-                              </span>
-                              {entry.intent && (
-                                <span className={`intent-badge intent-${entry.intent}`}>
-                                  {entry.intent === 'need' && '🌱 Need'}
-                                  {entry.intent === 'want' && '☕ Want'}
-                                  {entry.intent === 'impulse' && '⚡ Impulse'}
+                  return (
+                    <div
+                      key={entry.id}
+                      className={`inset-row ${idx === group.entries.length - 1 ? 'last-row' : ''}`}
+                      onClick={() => setEditingEntry(entry)}
+                      role="button"
+                      tabIndex={0}
+                    >
+                      {/* Left: Category dot + Note & Category + Intent */}
+                      <div className="inset-row-left">
+                        <span
+                          className="category-dot-specular"
+                          style={{ backgroundColor: cat ? cat.color : '#94a3b8' }}
+                          title={cat ? cat.name : 'Category'}
+                        />
+                        <div className="inset-row-text">
+                          <div className="row-title-line">
+                            <span className="row-primary-label">
+                              {entry.note || (cat ? cat.name : 'Uncategorized')}
+                            </span>
+                            {entry.intent && (
+                              <span className={`intent-capsule intent-${entry.intent}`}>
+                                {entry.intent === 'need' && <NeedIcon size={11} />}
+                                {entry.intent === 'want' && <WantIcon size={11} />}
+                                {entry.intent === 'impulse' && <ImpulseIcon size={11} />}
+                                <span className="intent-capsule-label">
+                                  {entry.intent === 'need' && 'Need'}
+                                  {entry.intent === 'want' && 'Want'}
+                                  {entry.intent === 'impulse' && 'Impulse'}
                                 </span>
-                              )}
-                            </div>
-                            <div className="entry-subtitle-row">
-                              <span className="entry-category-name">{cat ? cat.name : 'General'}</span>
-                              <span className="entry-dot-separator">•</span>
-                              <span className="entry-time">{formatTimeLabel(entry.occurredAt, entry.tz)}</span>
-                            </div>
+                              </span>
+                            )}
+                          </div>
+                          <div className="row-subtitle-line">
+                            <span className="category-subtitle">{cat ? cat.name : 'General'}</span>
+                            <span className="dot-sep">•</span>
+                            <span className="time-subtitle">{formatTimeLabel(entry.occurredAt, entry.tz)}</span>
                           </div>
                         </div>
+                      </div>
 
-                        <div className="entry-card-right">
-                          <span className={`entry-amount ${isIncome ? 'amount-income' : 'amount-expense'}`}>
-                            {isIncome ? '+' : '-'}{formatINR(entry.amountCents)}
-                          </span>
+                      {/* Right: Amount & Subtle Hover Action Icons */}
+                      <div className="inset-row-right">
+                        <span className={`row-amount tabular-nums ${isIncome ? 'amount-income' : 'amount-expense'}`}>
+                          {isIncome ? '+' : '-'}{formatINR(entry.amountCents)}
+                        </span>
+
+                        <div className="row-hover-actions">
+                          <button
+                            type="button"
+                            className="row-action-icon-btn"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setEditingEntry(entry);
+                            }}
+                            title="Edit transaction"
+                            aria-label="Edit transaction"
+                          >
+                            <EditIcon size={14} />
+                          </button>
+                          <button
+                            type="button"
+                            className="row-action-icon-btn destructive"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              void softDeleteEntry(entry.id);
+                            }}
+                            title="Delete transaction"
+                            aria-label="Delete transaction"
+                          >
+                            <TrashIcon size={14} />
+                          </button>
                         </div>
                       </div>
-                    );
-                  })}
-                </div>
-
-                {/* Wide Screen Table */}
-                <div className="desktop-table-wrapper">
-                  <table className="desktop-table">
-                    <colgroup>
-                      <col style={{ width: '95px' }} />
-                      <col style={{ width: '200px' }} />
-                      <col />
-                      <col style={{ width: '120px' }} />
-                      <col style={{ width: '135px' }} />
-                      <col style={{ width: '110px' }} />
-                    </colgroup>
-                    <thead>
-                      <tr>
-                        <th>Time</th>
-                        <th>Category</th>
-                        <th>Note</th>
-                        <th>Intent</th>
-                        <th className="text-right">Amount ({currencySymbol})</th>
-                        <th className="text-right">Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {group.entries.map((entry) => {
-                        const cat = categoryMap.get(entry.categoryId);
-                        const isIncome = entry.kind === 'income';
-
-                        return (
-                          <tr key={entry.id}>
-                            <td className="text-muted">{formatTimeLabel(entry.occurredAt, entry.tz)}</td>
-                            <td>
-                              <span className="category-pill">
-                                <span
-                                  className="pill-dot"
-                                  style={{ backgroundColor: cat ? cat.color : '#94a3b8' }}
-                                />
-                                {cat ? cat.name : 'Uncategorized'}
-                              </span>
-                            </td>
-                            <td className="font-medium table-cell-note">{entry.note || '—'}</td>
-                            <td>
-                              {entry.intent ? (
-                                <span className={`intent-badge intent-${entry.intent}`}>
-                                  {entry.intent === 'need' && '🌱 Need'}
-                                  {entry.intent === 'want' && '☕ Want'}
-                                  {entry.intent === 'impulse' && '⚡ Impulse'}
-                                </span>
-                              ) : (
-                                <span className="text-muted">—</span>
-                              )}
-                            </td>
-                            <td className={`text-right font-semibold ${isIncome ? 'amount-income' : 'amount-expense'}`}>
-                              {isIncome ? '+' : '-'}{formatINR(entry.amountCents)}
-                            </td>
-                            <td className="text-right">
-                              <div className="table-actions-cell">
-                                <button
-                                  type="button"
-                                  className="btn-icon"
-                                  onClick={() => setEditingEntry(entry)}
-                                  title="Edit transaction"
-                                >
-                                  ✏️
-                                </button>
-                                <button
-                                  type="button"
-                                  className="btn-icon"
-                                  onClick={() => void softDeleteEntry(entry.id)}
-                                  title="Delete transaction"
-                                >
-                                  🗑️
-                                </button>
-                              </div>
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                </div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           ))
@@ -366,7 +403,7 @@ export const LedgerView: React.FC = () => {
         onClick={() => setIsQuickAddOpen(true)}
         aria-label="Add transaction"
       >
-        +
+        <PlusIcon size={24} />
       </button>
 
       {/* Quick Add Modal */}

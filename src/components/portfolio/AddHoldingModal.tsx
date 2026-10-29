@@ -139,21 +139,21 @@ export const AddHoldingModal: React.FC<AddHoldingModalProps> = ({
               className={`segmented-btn ${assetClass === 'mutual_fund' ? 'active-expense' : ''}`}
               onClick={() => setAssetClass('mutual_fund')}
             >
-              📊 Mutual Fund
+              Mutual Fund
             </button>
             <button
               type="button"
               className={`segmented-btn ${assetClass === 'equity' ? 'active-income' : ''}`}
               onClick={() => setAssetClass('equity')}
             >
-              📈 Equity / Stock
+              Equity / Stock
             </button>
             <button
               type="button"
               className={`segmented-btn ${assetClass === 'gold' ? 'active-want' : ''}`}
               onClick={() => setAssetClass('gold')}
             >
-              🥇 Physical Gold
+              Physical Gold
             </button>
           </div>
         </div>

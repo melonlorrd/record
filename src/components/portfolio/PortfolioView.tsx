@@ -4,6 +4,11 @@ import { AssetClass, PortfolioHolding } from '../../domain/types';
 import { calculatePortfolioSummary, calculateRunningBalance, getActiveEntries } from '../../domain/analytics';
 import { formatINR } from '../../domain/money';
 import { AddHoldingModal } from './AddHoldingModal';
+import {
+  PortfolioIcon,
+  PlusIcon,
+  EditIcon,
+} from '../common/Icons';
 
 export const PortfolioView: React.FC = () => {
   const { holdings, entries, currencySymbol } = useStore();
@@ -30,14 +35,14 @@ export const PortfolioView: React.FC = () => {
     return summary.holdings.filter((h) => h.assetClass === filterClass);
   }, [summary.holdings, filterClass]);
 
-  const assetClassLabel = (ac: AssetClass): { label: string; icon: string; badgeClass: string } => {
+  const assetClassLabel = (ac: AssetClass): { label: string; badgeClass: string; color: string } => {
     switch (ac) {
       case 'mutual_fund':
-        return { label: 'Mutual Fund', icon: '📊', badgeClass: 'badge-mf' };
+        return { label: 'Mutual Fund', badgeClass: 'badge-mf', color: '#0a84ff' };
       case 'equity':
-        return { label: 'Equity / Stock', icon: '📈', badgeClass: 'badge-equity' };
+        return { label: 'Equity / Stock', badgeClass: 'badge-equity', color: '#30d158' };
       case 'gold':
-        return { label: 'Physical Gold', icon: '🥇', badgeClass: 'badge-gold' };
+        return { label: 'Physical Gold', badgeClass: 'badge-gold', color: '#ffd60a' };
     }
   };
 
@@ -48,7 +53,7 @@ export const PortfolioView: React.FC = () => {
         <div>
           <h2>Investment Portfolio</h2>
           <p className="text-muted">
-            Track your Mutual Funds, Equities, and Gold holdings with live valuation and net worth.
+            Track Mutual Funds, Equities, and Gold holdings with live valuation and net worth.
           </p>
         </div>
         <button
@@ -59,19 +64,19 @@ export const PortfolioView: React.FC = () => {
             setIsAddOpen(true);
           }}
         >
-          + Add Holding
+          <PlusIcon size={16} />
+          <span>Add Holding</span>
         </button>
       </div>
 
-      {/* Net Worth & Portfolio Headline Stat Tiles */}
+      {/* Headline Stat Tiles */}
       <div className="stat-tiles-grid">
-        {/* Total Net Worth (Liquid Cash + Portfolio Value) */}
+        {/* Total Net Worth */}
         <div className="stat-tile card">
           <div className="stat-tile-header">
             <span className="stat-title">Total Net Worth</span>
-            <span className="stat-icon">💎</span>
           </div>
-          <div className="stat-value income-text">
+          <div className="stat-value income-text tabular-nums">
             {formatINR(totalNetWorthCents, { compactIfZeroPaise: true })}
           </div>
           <div className="stat-footer text-muted">
@@ -83,9 +88,8 @@ export const PortfolioView: React.FC = () => {
         <div className="stat-tile card">
           <div className="stat-tile-header">
             <span className="stat-title">Portfolio Value</span>
-            <span className="stat-icon">📈</span>
           </div>
-          <div className="stat-value">
+          <div className="stat-value tabular-nums">
             {formatINR(summary.totalCurrentValueCents, { compactIfZeroPaise: true })}
           </div>
           <div className="stat-footer text-muted">
@@ -93,13 +97,12 @@ export const PortfolioView: React.FC = () => {
           </div>
         </div>
 
-        {/* Invested Amount */}
+        {/* Total Invested */}
         <div className="stat-tile card">
           <div className="stat-tile-header">
             <span className="stat-title">Total Invested</span>
-            <span className="stat-icon">💼</span>
           </div>
-          <div className="stat-value">
+          <div className="stat-value tabular-nums">
             {formatINR(summary.totalInvestedCents, { compactIfZeroPaise: true })}
           </div>
           <div className="stat-footer text-muted">Principal cost basis</div>
@@ -108,10 +111,9 @@ export const PortfolioView: React.FC = () => {
         {/* Unrealized Gain */}
         <div className="stat-tile card">
           <div className="stat-tile-header">
-            <span className="stat-title">Total Gain / Returns</span>
-            <span className="stat-icon">{summary.totalGainCents >= 0 ? '🚀' : '🔻'}</span>
+            <span className="stat-title">Total Returns</span>
           </div>
-          <div className={`stat-value ${summary.totalGainCents >= 0 ? 'income-text' : 'expense-text'}`}>
+          <div className={`stat-value tabular-nums ${summary.totalGainCents >= 0 ? 'income-text' : 'expense-text'}`}>
             {summary.totalGainCents >= 0 ? '+' : ''}
             {formatINR(summary.totalGainCents, { compactIfZeroPaise: true })}
           </div>
@@ -159,7 +161,9 @@ export const PortfolioView: React.FC = () => {
                   <span className="font-semibold">{item.label}</span>
                 </div>
                 <div className="allocation-legend-stats">
-                  <span className="font-semibold">{formatINR(item.totalCurrentValueCents, { compactIfZeroPaise: true })}</span>
+                  <span className="font-semibold tabular-nums">
+                    {formatINR(item.totalCurrentValueCents, { compactIfZeroPaise: true })}
+                  </span>
                   <span className="text-muted">({item.percentage}%)</span>
                 </div>
                 <div className="allocation-drift-row small-text">
@@ -174,203 +178,130 @@ export const PortfolioView: React.FC = () => {
         </div>
       </div>
 
-      {/* Holdings Filter Tabs */}
-      <div className="ledger-controls card">
-        <div className="portfolio-filter-row">
-          <div className="segmented-control" role="radiogroup">
-            <button
-              type="button"
-              className={`segmented-btn ${filterClass === 'ALL' ? 'active-income' : ''}`}
-              onClick={() => setFilterClass('ALL')}
-            >
-              All Assets ({summary.activeHoldingsCount})
-            </button>
-            <button
-              type="button"
-              className={`segmented-btn ${filterClass === 'mutual_fund' ? 'active-income' : ''}`}
-              onClick={() => setFilterClass('mutual_fund')}
-            >
-              📊 Mutual Funds
-            </button>
-            <button
-              type="button"
-              className={`segmented-btn ${filterClass === 'equity' ? 'active-income' : ''}`}
-              onClick={() => setFilterClass('equity')}
-            >
-              📈 Equity
-            </button>
-            <button
-              type="button"
-              className={`segmented-btn ${filterClass === 'gold' ? 'active-income' : ''}`}
-              onClick={() => setFilterClass('gold')}
-            >
-              🥇 Gold
-            </button>
-          </div>
-
+      {/* Holdings Filter Segmented Control in Glass Capsule */}
+      <div className="portfolio-filter-glass-capsule">
+        <div className="segmented-control" role="radiogroup" aria-label="Asset Class Filter">
           <button
             type="button"
-            className="btn btn-primary btn-sm"
-            onClick={() => {
-              setEditingHolding(null);
-              setIsAddOpen(true);
-            }}
+            className={`segmented-btn ${filterClass === 'ALL' ? 'active-income' : ''}`}
+            onClick={() => setFilterClass('ALL')}
           >
-            + Add Holding
+            All ({summary.activeHoldingsCount})
+          </button>
+          <button
+            type="button"
+            className={`segmented-btn ${filterClass === 'mutual_fund' ? 'active-income' : ''}`}
+            onClick={() => setFilterClass('mutual_fund')}
+          >
+            Mutual Funds
+          </button>
+          <button
+            type="button"
+            className={`segmented-btn ${filterClass === 'equity' ? 'active-income' : ''}`}
+            onClick={() => setFilterClass('equity')}
+          >
+            Equity
+          </button>
+          <button
+            type="button"
+            className={`segmented-btn ${filterClass === 'gold' ? 'active-income' : ''}`}
+            onClick={() => setFilterClass('gold')}
+          >
+            Gold
           </button>
         </div>
       </div>
 
-      {/* Holdings List: Cards on phone, table on wide screens */}
+      {/* Holdings Inset-Grouped List */}
       {filteredHoldings.length === 0 ? (
-        <div className="empty-state card">
-          <div className="empty-state-icon">💼</div>
-          <h3>No investments in this category</h3>
-          <p>Add your first mutual fund, equity, or gold position to start tracking.</p>
+        <div className="empty-state-card">
+          <div className="empty-state-icon-circle">
+            <PortfolioIcon size={32} />
+          </div>
+          <h3 className="empty-state-title">No investments in this asset class</h3>
+          <p className="empty-state-subtitle">Add your first mutual fund, equity, or gold position to start tracking.</p>
           <button
             type="button"
-            className="btn btn-primary"
+            className="glass-add-capsule-btn"
             onClick={() => {
               setEditingHolding(null);
               setIsAddOpen(true);
             }}
           >
-            + Add Investment
+            <PlusIcon size={16} />
+            <span>Add Position</span>
           </button>
         </div>
       ) : (
-        <div className="transactions-container">
-          {/* Mobile Cards */}
-          <div className="mobile-cards-list">
-            {filteredHoldings.map((h) => {
-              const meta = assetClassLabel(h.assetClass);
-              const isProfit = h.gainCents >= 0;
+        <div className="inset-group-card">
+          {filteredHoldings.map((h, idx) => {
+            const meta = assetClassLabel(h.assetClass);
+            const isProfit = h.gainCents >= 0;
 
-              return (
-                <div
-                  key={h.id}
-                  className="entry-card card"
-                  onClick={() => setEditingHolding(h)}
-                  role="button"
-                  tabIndex={0}
-                >
-                  <div className="entry-card-left">
-                    <span className="holding-icon-badge">{meta.icon}</span>
-                    <div className="entry-details">
-                      <div className="entry-title-row">
-                        <span className="entry-note">{h.name}</span>
-                        <span className={`asset-class-badge ${meta.badgeClass}`}>
-                          {meta.label}
-                        </span>
-                      </div>
-                      <div className="entry-subtitle-row">
-                        {h.sector && (
-                          <>
-                            <span className="text-muted">{h.sector}</span>
-                            <span className="entry-dot-separator">•</span>
-                          </>
-                        )}
-                        <span>{h.units} units</span>
-                        <span className="entry-dot-separator">•</span>
-                        <span>Avg {currencySymbol}{(h.buyAvgPriceCents / 100).toFixed(2)}</span>
-                        <span className="entry-dot-separator">•</span>
-                        <span>Current {currencySymbol}{(h.currentNavOrPriceCents / 100).toFixed(2)}</span>
-                      </div>
+            return (
+              <div
+                key={h.id}
+                className={`inset-row ${idx === filteredHoldings.length - 1 ? 'last-row' : ''}`}
+                onClick={() => setEditingHolding(h)}
+                role="button"
+                tabIndex={0}
+              >
+                <div className="inset-row-left">
+                  <span
+                    className="category-dot-specular"
+                    style={{ backgroundColor: meta.color }}
+                  />
+                  <div className="inset-row-text">
+                    <div className="row-title-line">
+                      <span className="row-primary-label">{h.name}</span>
+                      <span className={`asset-class-badge ${meta.badgeClass}`}>
+                        {meta.label}
+                      </span>
+                    </div>
+                    <div className="row-subtitle-line">
+                      {h.symbolOrFolio && (
+                        <>
+                          <span className="text-secondary">{h.symbolOrFolio}</span>
+                          <span className="dot-sep">•</span>
+                        </>
+                      )}
+                      <span>{h.units} units</span>
+                      <span className="dot-sep">•</span>
+                      <span>Avg {currencySymbol}{(h.buyAvgPriceCents / 100).toFixed(2)}</span>
+                      <span className="dot-sep">•</span>
+                      <span>Now {currencySymbol}{(h.currentNavOrPriceCents / 100).toFixed(2)}</span>
                     </div>
                   </div>
+                </div>
 
-                  <div className="entry-card-right">
-                    <span className="entry-amount font-semibold">
+                <div className="inset-row-right">
+                  <div className="holding-values-stack">
+                    <span className="row-amount tabular-nums">
                       {formatINR(h.currentValueCents, { compactIfZeroPaise: true })}
                     </span>
-                    <span className={`gain-pill ${isProfit ? 'profit-text' : 'loss-text'}`}>
+                    <span className={`gain-pill tabular-nums ${isProfit ? 'profit-text' : 'loss-text'}`}>
                       {isProfit ? '+' : ''}{formatINR(h.gainCents, { compactIfZeroPaise: true })} ({isProfit ? '+' : ''}{h.gainPercent}%)
                     </span>
                   </div>
+
+                  <div className="row-hover-actions">
+                    <button
+                      type="button"
+                      className="row-action-icon-btn"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setEditingHolding(h);
+                      }}
+                      title="Edit holding"
+                      aria-label="Edit holding"
+                    >
+                      <EditIcon size={14} />
+                    </button>
+                  </div>
                 </div>
-              );
-            })}
-          </div>
-
-          {/* Wide Screen Table */}
-          <div className="desktop-table-wrapper">
-            <table className="desktop-table" style={{ minWidth: 980 }}>
-              <colgroup>
-                <col style={{ width: '220px' }} />
-                <col style={{ width: '135px' }} />
-                <col style={{ width: '80px' }} />
-                <col style={{ width: '100px' }} />
-                <col style={{ width: '110px' }} />
-                <col style={{ width: '110px' }} />
-                <col style={{ width: '120px' }} />
-                <col style={{ width: '125px' }} />
-                <col style={{ width: '80px' }} />
-              </colgroup>
-              <thead>
-                <tr>
-                  <th>Asset</th>
-                  <th>Class</th>
-                  <th className="text-right">Quantity</th>
-                  <th className="text-right">Avg Buy ({currencySymbol})</th>
-                  <th className="text-right">Current ({currencySymbol})</th>
-                  <th className="text-right">Invested</th>
-                  <th className="text-right">Current Value</th>
-                  <th className="text-right">Gain / Loss</th>
-                  <th className="text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredHoldings.map((h) => {
-                  const meta = assetClassLabel(h.assetClass);
-                  const isProfit = h.gainCents >= 0;
-
-                  return (
-                    <tr key={h.id}>
-                      <td>
-                        <div className="holding-table-name">
-                          <span className="font-semibold">{h.name}</span>
-                          <div className="small-text text-muted">
-                            {h.symbolOrFolio}
-                            {h.sector ? ` • ${h.sector}` : ''}
-                          </div>
-                        </div>
-                      </td>
-                      <td>
-                        <span className={`asset-class-badge ${meta.badgeClass}`}>
-                          {meta.icon} {meta.label}
-                        </span>
-                      </td>
-                      <td className="text-right font-medium tabular-nums">{h.units}</td>
-                      <td className="text-right text-muted tabular-nums">{currencySymbol}{(h.buyAvgPriceCents / 100).toFixed(2)}</td>
-                      <td className="text-right font-medium tabular-nums">{currencySymbol}{(h.currentNavOrPriceCents / 100).toFixed(2)}</td>
-                      <td className="text-right text-muted tabular-nums">{formatINR(h.investedCents)}</td>
-                      <td className="text-right font-semibold tabular-nums">{formatINR(h.currentValueCents)}</td>
-                      <td className={`text-right font-semibold tabular-nums ${isProfit ? 'income-text' : 'expense-text'}`}>
-                        <div style={{ whiteSpace: 'nowrap' }}>
-                          {isProfit ? '+' : ''}{formatINR(h.gainCents)}
-                        </div>
-                        <div className="small-text" style={{ whiteSpace: 'nowrap' }}>
-                          ({isProfit ? '+' : ''}{h.gainPercent}%)
-                        </div>
-                      </td>
-                      <td className="text-right">
-                        <div className="table-actions-cell">
-                          <button
-                            type="button"
-                            className="btn-icon"
-                            onClick={() => setEditingHolding(h)}
-                            title="Edit holding"
-                          >
-                            ✏️
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+              </div>
+            );
+          })}
         </div>
       )}
 
