@@ -16,6 +16,7 @@ import {
   SettingsIcon,
   SunIcon,
   MoonIcon,
+  RecordLogo,
 } from './components/common/Icons';
 import './App.css';
 
@@ -48,7 +49,7 @@ const MainApp: React.FC = () => {
       <aside className="desktop-sidebar" aria-label="Desktop Sidebar Navigation">
         <div className="sidebar-header">
           <div className="brand-group">
-            <span className="brand-logo">R</span>
+            <RecordLogo size={32} />
             <div>
               <h1 className="brand-title">Record</h1>
               <span className="pwa-status-capsule">
@@ -99,7 +100,7 @@ const MainApp: React.FC = () => {
         <header className="top-navbar">
           <div className="top-navbar-content">
             <div className="brand-group mobile-only">
-              <span className="brand-logo">R</span>
+              <RecordLogo size={32} />
               <div>
                 <h1 className="brand-title">Record</h1>
                 <span className="pwa-status-capsule">

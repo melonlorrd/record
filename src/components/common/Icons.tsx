@@ -5,6 +5,116 @@ export interface IconProps extends React.SVGProps<SVGSVGElement> {
   className?: string;
 }
 
+export const RecordLogo: React.FC<{ size?: number; className?: string }> = ({ size = 32, className = '' }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 512 512"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    className={`record-brand-logo ${className}`}
+    aria-hidden="true"
+  >
+    <defs>
+      <linearGradient id="logo-bg-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stopColor="#11131f" />
+        <stop offset="50%" stopColor="#090a10" />
+        <stop offset="100%" stopColor="#040507" />
+      </linearGradient>
+
+      <radialGradient id="logo-ambient-glow" cx="50%" cy="32%" r="65%">
+        <stop offset="0%" stopColor="#0a84ff" stopOpacity="0.5" />
+        <stop offset="45%" stopColor="#5e5ce6" stopOpacity="0.25" />
+        <stop offset="85%" stopColor="#000000" stopOpacity="0" />
+      </radialGradient>
+
+      <linearGradient id="logo-specular-rim" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stopColor="#ffffff" stopOpacity="0.6" />
+        <stop offset="30%" stopColor="#ffffff" stopOpacity="0.2" />
+        <stop offset="70%" stopColor="#ffffff" stopOpacity="0.05" />
+        <stop offset="100%" stopColor="#ffffff" stopOpacity="0.15" />
+      </linearGradient>
+
+      <linearGradient id="logo-emblem-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stopColor="#60a5fa" />
+        <stop offset="35%" stopColor="#0a84ff" />
+        <stop offset="100%" stopColor="#5e5ce6" />
+      </linearGradient>
+
+      <linearGradient id="logo-emblem-specular" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stopColor="#ffffff" stopOpacity="0.85" />
+        <stop offset="40%" stopColor="#ffffff" stopOpacity="0.2" />
+        <stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
+      </linearGradient>
+
+      <radialGradient id="logo-iris-glow" cx="40%" cy="40%" r="60%">
+        <stop offset="0%" stopColor="#6ee7b7" />
+        <stop offset="50%" stopColor="#30d158" />
+        <stop offset="100%" stopColor="#059669" />
+      </radialGradient>
+
+      <filter id="logo-emblem-shadow" x="-20%" y="-20%" width="140%" height="140%">
+        <feDropShadow dx="0" dy="10" stdDeviation="14" floodColor="#000000" floodOpacity="0.55" />
+        <feDropShadow dx="0" dy="4" stdDeviation="6" floodColor="#0a84ff" floodOpacity="0.30" />
+      </filter>
+
+      <filter id="logo-iris-shadow" x="-30%" y="-30%" width="160%" height="160%">
+        <feDropShadow dx="0" dy="3" stdDeviation="5" floodColor="#000000" floodOpacity="0.4" />
+        <feDropShadow dx="0" dy="0" stdDeviation="8" floodColor="#30d158" floodOpacity="0.6" />
+      </filter>
+    </defs>
+
+    <rect x="0" y="0" width="512" height="512" rx="116" fill="url(#logo-bg-grad)" />
+    <rect x="0" y="0" width="512" height="512" rx="116" fill="url(#logo-ambient-glow)" />
+
+    <circle cx="256" cy="256" r="196" fill="none" stroke="rgba(255, 255, 255, 0.05)" strokeWidth="2" />
+    <circle cx="256" cy="256" r="148" fill="none" stroke="rgba(255, 255, 255, 0.07)" strokeWidth="2" strokeDasharray="6 6" />
+
+    <rect x="1" y="1" width="510" height="510" rx="115" fill="none" stroke="url(#logo-specular-rim)" strokeWidth="2" />
+
+    <g filter="url(#logo-emblem-shadow)">
+      <rect x="144" y="128" width="44" height="256" rx="22" fill="url(#logo-emblem-grad)" />
+      <rect x="145" y="129" width="42" height="120" rx="21" fill="url(#logo-emblem-specular)" opacity="0.4" />
+
+      <path
+        d="M 166 128 L 276 128 C 346 128, 386 166, 386 222 C 386 278, 346 316, 276 316 L 166 316"
+        fill="none"
+        stroke="url(#logo-emblem-grad)"
+        strokeWidth="44"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+
+      <path
+        d="M 172 130 L 274 130 C 340 130, 376 164, 376 218"
+        fill="none"
+        stroke="url(#logo-emblem-specular)"
+        strokeWidth="12"
+        strokeLinecap="round"
+        opacity="0.65"
+      />
+
+      <path
+        d="M 266 296 L 348 372 C 356 380, 368 384, 380 384 C 392 384, 396 376, 396 364 C 396 352, 390 342, 382 334 L 302 260"
+        fill="url(#logo-emblem-grad)"
+      />
+      <path
+        d="M 276 294 L 366 372"
+        stroke="url(#logo-emblem-specular)"
+        strokeWidth="10"
+        strokeLinecap="round"
+        opacity="0.5"
+      />
+    </g>
+
+    <g filter="url(#logo-iris-shadow)">
+      <circle cx="270" cy="222" r="30" fill="none" stroke="rgba(48, 209, 88, 0.35)" strokeWidth="4" />
+      <circle cx="270" cy="222" r="18" fill="url(#logo-iris-glow)" />
+      <circle cx="264" cy="216" r="5" fill="#ffffff" opacity="0.9" />
+    </g>
+  </svg>
+);
+
 export const LedgerIcon: React.FC<IconProps> = ({ size = 20, className = '', ...props }) => (
   <svg
     width={size}

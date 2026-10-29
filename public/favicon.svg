@@ -1,20 +1,125 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
   <defs>
-    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#059669" />
-      <stop offset="100%" stop-color="#0284c7" />
+    <!-- Background Midnight Glass Gradients -->
+    <linearGradient id="bg-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#11131f" />
+      <stop offset="50%" stop-color="#090a10" />
+      <stop offset="100%" stop-color="#040507" />
     </linearGradient>
-    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
-      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#000000" flood-opacity="0.3" />
+
+    <!-- Caustic Ambient Blue Glow -->
+    <radialGradient id="ambient-glow" cx="50%" cy="32%" r="65%">
+      <stop offset="0%" stop-color="#0a84ff" stop-opacity="0.45" />
+      <stop offset="45%" stop-color="#5e5ce6" stop-opacity="0.22" />
+      <stop offset="85%" stop-color="#000000" stop-opacity="0" />
+    </radialGradient>
+
+    <!-- Specular Rim Gradient -->
+    <linearGradient id="specular-rim" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.55" />
+      <stop offset="30%" stop-color="#ffffff" stop-opacity="0.20" />
+      <stop offset="70%" stop-color="#ffffff" stop-opacity="0.05" />
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0.12" />
+    </linearGradient>
+
+    <!-- Emblem Primary Gradient: Electric Cobalt to Apple Purple -->
+    <linearGradient id="emblem-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#60a5fa" />
+      <stop offset="35%" stop-color="#0a84ff" />
+      <stop offset="100%" stop-color="#5e5ce6" />
+    </linearGradient>
+
+    <!-- Emblem Specular Overlay -->
+    <linearGradient id="emblem-specular" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.8" />
+      <stop offset="40%" stop-color="#ffffff" stop-opacity="0.2" />
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0" />
+    </linearGradient>
+
+    <!-- Core Iris Glow -->
+    <radialGradient id="iris-glow" cx="40%" cy="40%" r="60%">
+      <stop offset="0%" stop-color="#6ee7b7" />
+      <stop offset="50%" stop-color="#30d158" />
+      <stop offset="100%" stop-color="#059669" />
+    </radialGradient>
+
+    <!-- Drop Shadow Filters -->
+    <filter id="emblem-shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#000000" flood-opacity="0.55" />
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#0a84ff" flood-opacity="0.30" />
+    </filter>
+
+    <filter id="iris-shadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="3" stdDeviation="5" flood-color="#000000" flood-opacity="0.4" />
+      <feDropShadow dx="0" dy="0" stdDeviation="8" flood-color="#30d158" flood-opacity="0.6" />
     </filter>
   </defs>
-  <rect width="512" height="512" rx="128" fill="#0f172a" />
-  <circle cx="256" cy="256" r="180" fill="url(#grad)" filter="url(#shadow)" />
-  <!-- Rupee Symbol glyph path -->
-  <path d="M190 160h132 M190 200h132 M190 160v120c30 0 65-15 65-60h-65 M240 260l70 100" 
-        stroke="#ffffff" 
-        stroke-width="32" 
-        stroke-linecap="round" 
-        stroke-linejoin="round" 
-        fill="none" />
+
+  <!-- iOS Continuous Curvature Squircle Base -->
+  <rect x="0" y="0" width="512" height="512" rx="116" fill="url(#bg-grad)" />
+
+  <!-- Ambient Light Depth -->
+  <rect x="0" y="0" width="512" height="512" rx="116" fill="url(#ambient-glow)" />
+
+  <!-- Concentric Precision Optics / Aperture Rings -->
+  <circle cx="256" cy="256" r="196" fill="none" stroke="rgba(255, 255, 255, 0.04)" stroke-width="1.5" />
+  <circle cx="256" cy="256" r="148" fill="none" stroke="rgba(255, 255, 255, 0.06)" stroke-width="1.5" stroke-dasharray="6 6" />
+
+  <!-- Specular Outer Glass Rim -->
+  <rect x="1" y="1" width="510" height="510" rx="115" fill="none" stroke="url(#specular-rim)" stroke-width="1.5" />
+
+  <!-- Central "Record" Monogram Emblem with Liquid Glass Depth -->
+  <g filter="url(#emblem-shadow)">
+    <!-- Stem: Vertical Ledger Spine -->
+    <rect x="144" y="128" width="44" height="256" rx="22" fill="url(#emblem-grad)" />
+    <!-- Stem Specular Highlight -->
+    <rect x="145" y="129" width="42" height="120" rx="21" fill="url(#emblem-specular)" opacity="0.4" />
+
+    <!-- Loop: Sweeping Iridescent Glass Ribbon -->
+    <path d="M 166 128
+             L 276 128
+             C 346 128, 386 166, 386 222
+             C 386 278, 346 316, 276 316
+             L 166 316"
+          fill="none"
+          stroke="url(#emblem-grad)"
+          stroke-width="44"
+          stroke-linecap="round"
+          stroke-linejoin="round" />
+
+    <!-- Loop Specular Top Highlight -->
+    <path d="M 172 130
+             L 274 130
+             C 340 130, 376 164, 376 218"
+          fill="none"
+          stroke="url(#emblem-specular)"
+          stroke-width="12"
+          stroke-linecap="round"
+          opacity="0.65" />
+
+    <!-- Leg: Dynamic Financial Trajectory / Growth Diagonal -->
+    <path d="M 266 296
+             L 348 372
+             C 356 380, 368 384, 380 384
+             C 392 384, 396 376, 396 364
+             C 396 352, 390 342, 382 334
+             L 302 260"
+          fill="url(#emblem-grad)" />
+    <!-- Leg Specular Line -->
+    <path d="M 276 294 L 366 372"
+          stroke="url(#emblem-specular)"
+          stroke-width="10"
+          stroke-linecap="round"
+          opacity="0.5" />
+  </g>
+
+  <!-- Luminous Core Pulse / Iris (Live Recording & Net Worth Indicator) -->
+  <g filter="url(#iris-shadow)">
+    <!-- Outer Translucent Glow Ring -->
+    <circle cx="270" cy="222" r="30" fill="none" stroke="rgba(48, 209, 88, 0.35)" stroke-width="4" />
+    <!-- Inner Solid Specular Iris -->
+    <circle cx="270" cy="222" r="18" fill="url(#iris-glow)" />
+    <!-- Highlight Specular Dot -->
+    <circle cx="264" cy="216" r="5" fill="#ffffff" opacity="0.9" />
+  </g>
 </svg>
