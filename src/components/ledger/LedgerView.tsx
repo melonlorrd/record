@@ -283,7 +283,7 @@ export const LedgerView: React.FC = () => {
                       <col />
                       <col style={{ width: '120px' }} />
                       <col style={{ width: '135px' }} />
-                      <col style={{ width: '75px' }} />
+                      <col style={{ width: '110px' }} />
                     </colgroup>
                     <thead>
                       <tr>
@@ -328,22 +328,24 @@ export const LedgerView: React.FC = () => {
                               {isIncome ? '+' : '-'}{formatINR(entry.amountCents)}
                             </td>
                             <td className="text-right">
-                              <button
-                                type="button"
-                                className="btn-icon"
-                                onClick={() => setEditingEntry(entry)}
-                                title="Edit transaction"
-                              >
-                                ✏️
-                              </button>
-                              <button
-                                type="button"
-                                className="btn-icon"
-                                onClick={() => void softDeleteEntry(entry.id)}
-                                title="Delete transaction"
-                              >
-                                🗑️
-                              </button>
+                              <div className="table-actions-cell">
+                                <button
+                                  type="button"
+                                  className="btn-icon"
+                                  onClick={() => setEditingEntry(entry)}
+                                  title="Edit transaction"
+                                >
+                                  ✏️
+                                </button>
+                                <button
+                                  type="button"
+                                  className="btn-icon"
+                                  onClick={() => void softDeleteEntry(entry.id)}
+                                  title="Delete transaction"
+                                >
+                                  🗑️
+                                </button>
+                              </div>
                             </td>
                           </tr>
                         );

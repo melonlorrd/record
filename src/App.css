@@ -790,6 +790,24 @@ button, input, select, textarea {
   vertical-align: middle;
 }
 
+.desktop-table th:first-child,
+.desktop-table td:first-child {
+  padding-left: 20px;
+}
+
+.desktop-table th:last-child,
+.desktop-table td:last-child {
+  padding-right: 22px;
+}
+
+.table-actions-cell {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+  white-space: nowrap;
+}
+
 .desktop-table th {
   text-align: left;
   font-weight: 600;

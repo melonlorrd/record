@@ -294,17 +294,17 @@ export const PortfolioView: React.FC = () => {
 
           {/* Wide Screen Table */}
           <div className="desktop-table-wrapper">
-            <table className="desktop-table">
+            <table className="desktop-table" style={{ minWidth: 980 }}>
               <colgroup>
-                <col />
-                <col style={{ width: '130px' }} />
-                <col style={{ width: '70px' }} />
-                <col style={{ width: '95px' }} />
-                <col style={{ width: '105px' }} />
-                <col style={{ width: '95px' }} />
-                <col style={{ width: '105px' }} />
+                <col style={{ width: '220px' }} />
+                <col style={{ width: '135px' }} />
+                <col style={{ width: '80px' }} />
+                <col style={{ width: '100px' }} />
                 <col style={{ width: '110px' }} />
-                <col style={{ width: '50px' }} />
+                <col style={{ width: '110px' }} />
+                <col style={{ width: '120px' }} />
+                <col style={{ width: '125px' }} />
+                <col style={{ width: '80px' }} />
               </colgroup>
               <thead>
                 <tr>
@@ -354,14 +354,16 @@ export const PortfolioView: React.FC = () => {
                         </div>
                       </td>
                       <td className="text-right">
-                        <button
-                          type="button"
-                          className="btn-icon"
-                          onClick={() => setEditingHolding(h)}
-                          title="Edit holding"
-                        >
-                          ✏️
-                        </button>
+                        <div className="table-actions-cell">
+                          <button
+                            type="button"
+                            className="btn-icon"
+                            onClick={() => setEditingHolding(h)}
+                            title="Edit holding"
+                          >
+                            ✏️
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   );
