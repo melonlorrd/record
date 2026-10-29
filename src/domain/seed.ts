@@ -105,8 +105,36 @@ export const SEED_HOLDINGS: PortfolioHolding[] = [
     sector: 'Physical Bullion / Commodities',
     units: 20,
     buyAvgPriceCents: 1208715,     // ₹12,087.15 / gram (Principal ₹2,41,743.00)
-    currentNavOrPriceCents: 1527464, // ₹15,274.64 / gram (Current ₹3,05,492.80, +26.4%)
+    currentNavOrPriceCents: 1527464, // ₹15,274.64 / gram (Current ₹3,05,492.80, +26.4% UP)
     notes: '20g 24K minted gold coins in vault (cost ₹2,41,743)',
+    createdAt: 1720000000000,
+    updatedAt: 1727827200000,
+    deleted: false,
+  },
+  {
+    id: 'd1222222-1222-4222-8222-122222222222',
+    assetClass: 'gold',
+    name: 'Sovereign Gold Bond (SGB 2023-24 Series IV)',
+    symbolOrFolio: 'SGB24IV',
+    sector: 'Sovereign Bullion / RBI Bonds',
+    units: 12,
+    buyAvgPriceCents: 626300,      // ₹6,263.00 / gram (Principal ₹75,156.00)
+    currentNavOrPriceCents: 608800,// ₹6,088.00 / gram (Current ₹73,056.00, -2.8% DOWN)
+    notes: 'RBI Sovereign Gold Bond 2.5% p.a. semi-annual coupon',
+    createdAt: 1720000000000,
+    updatedAt: 1727827200000,
+    deleted: false,
+  },
+  {
+    id: 'd1333333-1333-4333-8333-133333333333',
+    assetClass: 'gold',
+    name: 'Nippon India ETF Gold BeES',
+    symbolOrFolio: 'GOLDBEES.NS',
+    sector: 'Gold Exchange Traded Fund',
+    units: 300,
+    buyAvgPriceCents: 6250,        // ₹62.50 / unit (Principal ₹18,750.00)
+    currentNavOrPriceCents: 6550,  // ₹65.50 / unit (Current ₹19,650.00, +4.8% UP)
+    notes: 'Demat holding of Nippon Gold ETF on NSE',
     createdAt: 1720000000000,
     updatedAt: 1727827200000,
     deleted: false,
@@ -119,8 +147,22 @@ export const SEED_HOLDINGS: PortfolioHolding[] = [
     sector: 'Flexi Cap Equity / Mutual Fund',
     units: 684.797,
     buyAvgPriceCents: 9053,        // ₹90.53 / unit (Principal ₹61,994.67)
-    currentNavOrPriceCents: 8898,  // ₹88.98 / unit (Current ₹60,931.18, -1.7%)
+    currentNavOrPriceCents: 8898,  // ₹88.98 / unit (Current ₹60,931.18, -1.7% DOWN)
     notes: 'Parag Parikh Flexi Cap Fund Direct Plan (AMFI: 122639)',
+    createdAt: 1720000000000,
+    updatedAt: 1727827200000,
+    deleted: false,
+  },
+  {
+    id: 'd2333333-2333-4333-8333-233333333333',
+    assetClass: 'mutual_fund',
+    name: 'Mirae Asset Large & Midcap Fund - Direct Plan - Growth',
+    symbolOrFolio: 'MIRAE_LMC',
+    sector: 'Large & Midcap Equity / Mutual Fund',
+    units: 420.5,
+    buyAvgPriceCents: 11200,       // ₹112.00 / unit (Principal ₹47,096.00)
+    currentNavOrPriceCents: 12850, // ₹128.50 / unit (Current ₹54,034.25, +14.7% UP)
+    notes: 'Direct Growth SIP position',
     createdAt: 1720000000000,
     updatedAt: 1727827200000,
     deleted: false,
